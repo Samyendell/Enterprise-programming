@@ -1,11 +1,13 @@
-package com.books.model;
+package models;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
+ * 
+ * TODO
  * JAXB wrapper for a collection of books.
  *
  * JAXB cannot serialise a raw Collection<Book> — it needs a root element.

@@ -1,5 +1,14 @@
 package models;
 
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+
+/**
+ * TODO
+ * @author syende
+ *
+ */
+@XmlRootElement(name = "book")
 public class Book {
 
 	int id;
@@ -36,15 +45,16 @@ public class Book {
 
 	public Book() {}
 
-
+	@XmlElement
 	public int getId() {
 		return id;
 	}
-
+	
 	public void setId(int id) {
 		this.id = id;
 	}
 
+	@XmlElement
 	public String getTitle() {
 		return title;
 	}
@@ -53,6 +63,7 @@ public class Book {
 		this.title = title;
 	}
 
+	@XmlElement
 	public String getAuthor() {
 		return author;
 	}
@@ -61,6 +72,7 @@ public class Book {
 		this.author = author;
 	}
 
+	@XmlElement
 	public String getDate() {
 		return date;
 	}
@@ -69,6 +81,7 @@ public class Book {
 		this.date = date;
 	}
 
+	@XmlElement
 	public String getGenres() {
 		return genres;
 	}
@@ -77,6 +90,7 @@ public class Book {
 		this.genres = genres;
 	}
 
+	@XmlElement
 	public String getCharacters() {
 		return characters;
 	}
@@ -85,6 +99,7 @@ public class Book {
 		this.characters = characters;
 	}
 
+	@XmlElement
 	public String getSynopsis() {
 		return synopsis;
 	}

@@ -1,4 +1,4 @@
-package utils;
+package util;
 
 import models.Book;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class Validation {
 		
 		
 		
-		if (title == null || title.trim().isEmpty()) {
+		if (isBlank(title)) {
 			errors.add("The Book's title is missing.");
 		} 
 		if (title.trim().length() > 150) {
@@ -38,7 +38,7 @@ public class Validation {
 		// special characters??
 		// am i going to repeat the same rules for each one? is there a way to not repeat myself same for the text
 		
-		if (author == null || author.trim().isEmpty()) {
+		if (isBlank(author)) {
 			errors.add("The Book's author is missing.");
 		}
 		if (author.trim().length() > 150) {
@@ -50,7 +50,7 @@ public class Validation {
 		
 		// leave date for now? what data type is it 
 		
-		if (genres == null || genres.trim().isEmpty()) {
+		if (isBlank(genres)) {
 			errors.add("The Book's genre is missing."); // is this required?
 		}
 		if (genres.trim().length() > 50) {  // what if this is a list of them??
@@ -60,7 +60,7 @@ public class Validation {
 			errors.add("The Book's genre must be longer then 3 characters");
 		}
 		
-		if (characters == null || characters.trim().isEmpty()) {
+		if (isBlank(characters)) {
 			errors.add("The Book's characters is missing."); // is this required?
 		}
 		if (characters.trim().length() > 200) {  // what if this is a list of them??
@@ -93,6 +93,10 @@ public class Validation {
 					.replace("_", "\\_")
 					.replace("[]<>\"'", "");
 		}
+	}
+	
+	private static boolean isBlank(String s) {
+		return s == null || s.trim().isEmpty();
 	}
 }
 
