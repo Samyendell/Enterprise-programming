@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Book Library — REST Client</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .truncate { max-width:160px; white-space:nowrap;
+                    overflow:hidden; text-overflow:ellipsis; }
+        pre#rawResponse { font-size:.75rem; max-height:500px;
+                          overflow-y:auto; white-space:pre-wrap;
+                          word-break:break-all; }
+    </style>
+</head>
+<body class="bg-light">
+
+<!-- ── Navbar ──────────────────────────────────────────────────────────── -->
+<nav class="navbar navbar-dark bg-dark mb-4">
+    <div class="container-fluid">
+        <span class="navbar-brand fw-bold">📚 Book Library — REST Client</span>
+        <div class="d-flex align-items-center gap-3">
+            <label class="text-white-50 small mb-0">Format:</label>
+            <select id="formatSelect" class="form-select form-select-sm w-auto">
+                <option value="json">JSON</option>
+                <option value="xml">XML</option>
+                <option value="text">TEXT</option>
+            </select>
+            <button class="btn btn-success btn-sm" onclick="openAddModal()">
+                + Add Book
+            </button>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid px-4">
+    <div class="row g-4">
+
+        <!-- ── Left: table ──────────────────────────────────────────────── -->
+        <div class="col-xl-8">
+
+            <!-- Search bar -->
+            <div class="card shadow-sm mb-3">
+                <div class="card-body py-2">
+                    <div class="input-group">
+                        <input type="text" id="searchInput" class="form-control"
+                               placeholder="Search by title, author or genres…"
+                               maxlength="200">
+                        <button class="btn btn-primary"
+                                onclick="searchBooks()">Search</button>
+                        <button class="btn btn-outline-secondary"
+                                onclick="clearSearch()">Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Books table -->
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between">
+                    <span>
+                        Books
+                        <span id="bookCount" class="badge bg-secondary ms-1">0</span>
+                    </span>
+                    <span id="fmtBadge" class="badge bg-info text-dark">
+                        JSON
+                    </span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Date</th>
+                                    <th>Genres</th>
+                                    <th>Synopsis</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="booksBody">
+                                <tr>
+                                    <td colspan="7" class="text-center text-muted py-4">
+                                        Loading…
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Right: raw response viewer ──────────────────────────────── -->
+        <div class="col-xl-4">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    Raw API response
+                    <small id="lastMethod" class="text-muted ms-2"></small>
+                </div>
+                <div class="card-body p-2">
+                    <pre id="rawResponse" class="text-success mb-0"></pre>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ── Add/Edit Modal ───────────────────────────────────────────────────── -->
+<div class="modal fade" id="bookModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Add Book</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalErrors" class="alert alert-danger d-none"></div>
+                <input type="hidden" id="bookId">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            Title <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" id="fTitle" class="form-control"
+                               maxlength="255">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">
+                            Author <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" id="fAuthor" class="form-control"
+                               maxlength="255">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">
+                            Date <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" id="fDate" class="form-control"
+                               maxlength="20" placeholder="e.g. 2003">
+                    </div>
+                    <div class="col-md-8">
+                        <label class="form-label">
+                            Genres <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" id="fGenres" class="form-control"
+                               maxlength="255">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Characters</label>
+                        <input type="text" id="fCharacters" class="form-control"
+                               maxlength="500"
+                               placeholder="Comma-separated character names">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Synopsis</label>
+                        <textarea id="fSynopsis" class="form-control"
+                                  rows="3"></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Cover URL</label>
+                        <input type="text" id="fCover" class="form-control"
+                               maxlength="500" placeholder="https://...">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary"
+                        data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary"
+                        onclick="saveBook()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Delete Confirm Modal ─────────────────────────────────────────────── -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Delete "<strong id="deleteTitle"></strong>"?
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary"
+                        data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-danger"
+                        onclick="confirmDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/**
+ * JavaScript frontend — consumes the Book REST API.
+ *
+ * Key design decisions:
+ * - All server communication uses the Fetch API with async/await.
+ * - The selected format is sent as both a ?format= param and an Accept header,
+ *   demonstrating HTTP content negotiation alongside the query param approach.
+ * - Parsing is split into separate functions per format (parseBooks, parseBook)
+ *   so each format's logic is self-contained and easy to extend.
+ * - escHtml() is called on all API data before it is set as innerHTML,
+ *   preventing XSS from malicious data stored in the database.
+ * - Client-side validation in validateBook() mirrors server-side rules —
+ *   it improves UX but the server always validates independently.
+ */
+
+const API = 'api/books';
+
+const bookModal   = new bootstrap.Modal(document.getElementById('bookModal'));
+const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+let pendingDeleteId = null;
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadAll();
+
+    document.getElementById('formatSelect').addEventListener('change', () => {
+        document.getElementById('fmtBadge').textContent =
+            getFormat().toUpperCase();
+        loadAll();
+    });
+
+    document.getElementById('searchInput').addEventListener('keyup', e => {
+        if (e.key === 'Enter') searchBooks();
+    });
+});
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function getFormat() {
+    return document.getElementById('formatSelect').value;
+}
+
+function acceptHeader(format) {
+    return { json: 'application/json',
+             xml:  'application/xml',
+             text: 'text/plain' }[format] || 'application/json';
+}
+
+function showRaw(method, url, text) {
+    document.getElementById('lastMethod').textContent = method + ' ' + url;
+    document.getElementById('rawResponse').textContent = text;
+}
+
+// ── API calls ─────────────────────────────────────────────────────────────────
+
+async function loadAll() {
+    const fmt = getFormat();
+    const url = `${API}?format=${fmt}`;
+    try {
+        const res  = await fetch(url, { headers: { Accept: acceptHeader(fmt) } });
+        const text = await res.text();
+        showRaw('GET', url, text);
+        renderTable(parseBooks(text, fmt));
+    } catch (err) {
+        tableError('Could not connect to API: ' + err.message);
+    }
+}
+
+async function searchBooks() {
+    const q = document.getElementById('searchInput').value.trim();
+    if (!q) { loadAll(); return; }
+    if (q.length > 200) { alert('Search term too long.'); return; }
+
+    const fmt = getFormat();
+    const url = `${API}?format=${fmt}&search=${encodeURIComponent(q)}`;
+    try {
+        const res  = await fetch(url, { headers: { Accept: acceptHeader(fmt) } });
+        const text = await res.text();
+        showRaw('GET', url, text);
+        renderTable(parseBooks(text, fmt));
+    } catch (err) {
+        tableError('Search failed: ' + err.message);
+    }
+}
+
+function clearSearch() {
+    document.getElementById('searchInput').value = '';
+    loadAll();
+}
+
+function openAddModal() {
+    document.getElementById('modalTitle').textContent = 'Add Book';
+    ['bookId','fTitle','fAuthor','fDate','fGenres',
+     'fCharacters','fSynopsis','fCover'].forEach(id => {
+        document.getElementById(id).value = '';
+    });
+    document.getElementById('modalErrors').classList.add('d-none');
+    bookModal.show();
+}
+
+async function openEditModal(id) {
+    const fmt = getFormat();
+    const url = `${API}?id=${id}&format=${fmt}`;
+    try {
+        const res  = await fetch(url, { headers: { Accept: acceptHeader(fmt) } });
+        const text = await res.text();
+        showRaw('GET', url, text);
+        const b = parseBook(text, fmt);
+        if (!b) { alert('Could not load book.'); return; }
+
+        document.getElementById('modalTitle').textContent = 'Edit Book';
+        document.getElementById('bookId').value      = b.id;
+        document.getElementById('fTitle').value      = b.title      || '';
+        document.getElementById('fAuthor').value     = b.author     || '';
+        document.getElementById('fDate').value       = b.date       || '';
+        document.getElementById('fGenres').value     = b.genres     || '';
+        document.getElementById('fCharacters').value = b.characters || '';
+        document.getElementById('fSynopsis').value   = b.synopsis   || '';
+        document.getElementById('fCover').value      = b.cover      || '';
+        document.getElementById('modalErrors').classList.add('d-none');
+        bookModal.show();
+    } catch (err) {
+        alert('Error: ' + err.message);
+    }
+}
+
+async function saveBook() {
+    const id  = document.getElementById('bookId').value;
+    const book = {
+        id:         id ? parseInt(id) : 0,
+        title:      document.getElementById('fTitle').value.trim(),
+        author:     document.getElementById('fAuthor').value.trim(),
+        date:       document.getElementById('fDate').value.trim(),
+        genres:     document.getElementById('fGenres').value.trim(),
+        characters: document.getElementById('fCharacters').value.trim(),
+        synopsis:   document.getElementById('fSynopsis').value.trim(),
+        cover:      document.getElementById('fCover').value.trim()
+    };
+
+    // Client-side validation mirrors server-side ValidationUtil
+    const errs = validateBookClient(book);
+    if (errs.length) {
+        const el = document.getElementById('modalErrors');
+        el.innerHTML = errs.map(e => `<div>${escHtml(e)}</div>`).join('');
+        el.classList.remove('d-none');
+        return;
+    }
+
+    const fmt    = getFormat();
+    const isEdit = !!id;
+    const method = isEdit ? 'PUT' : 'POST';
+    const url    = isEdit
+        ? `${API}?id=${id}&format=${fmt}`
+        : `${API}?format=${fmt}`;
+    // Send JSON or XML depending on selected format
+    const body   = buildBody(book, fmt);
+    const ctype  = fmt === 'xml' ? 'application/xml' : 'application/json';
+
+    try {
+        const res  = await fetch(url, {
+            method,
+            headers: { 'Content-Type': ctype, Accept: acceptHeader(fmt) },
+            body
+        });
+        const text = await res.text();
+        showRaw(method, url, text);
+
+        if (res.ok || res.status === 201) {
+            bookModal.hide();
+            loadAll();
+        } else {
+            const el = document.getElementById('modalErrors');
+            el.textContent = 'Server: ' + extractErr(text, fmt);
+            el.classList.remove('d-none');
+        }
+    } catch (err) {
+        alert('Network error: ' + err.message);
+    }
+}
+
+function openDeleteModal(id, title) {
+    pendingDeleteId = id;
+    document.getElementById('deleteTitle').textContent = title;
+    deleteModal.show();
+}
+
+async function confirmDelete() {
+    if (!pendingDeleteId) return;
+    const fmt = getFormat();
+    const url = `${API}?id=${pendingDeleteId}&format=${fmt}`;
+    deleteModal.hide();
+    try {
+        const res  = await fetch(url, { method: 'DELETE' });
+        showRaw('DELETE', url,
+            res.status === 204 ? '204 No Content — deleted.' : await res.text());
+        loadAll();
+    } catch (err) {
+        alert('Delete failed: ' + err.message);
+    }
+    pendingDeleteId = null;
+}
+
+// ── Rendering ─────────────────────────────────────────────────────────────────
+
+function renderTable(books) {
+    document.getElementById('bookCount').textContent = books.length;
+    const tbody = document.getElementById('booksBody');
+
+    if (!books.length) {
+        tbody.innerHTML =
+            '<tr><td colspan="7" class="text-center text-muted py-4">No books found.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = books.map(b => `
+        <tr>
+            <td>${escHtml(b.id)}</td>
+            <td><strong>${escHtml(b.title)}</strong></td>
+            <td>${escHtml(b.author)}</td>
+            <td>${escHtml(b.date)}</td>
+            <td><span class="badge bg-info text-dark">${escHtml(b.genres)}</span></td>
+            <td class="truncate text-muted small"
+                title="${escHtml(b.synopsis || '')}">${escHtml(b.synopsis || '')}</td>
+            <td class="text-center">
+                <button class="btn btn-sm btn-warning me-1"
+                        onclick="openEditModal(${b.id})">Edit</button>
+                <button class="btn btn-sm btn-danger"
+                        onclick="openDeleteModal(${b.id},'${escHtml(b.title).replace(/'/g,"\\'")}')">
+                    Delete
+                </button>
+            </td>
+        </tr>`).join('');
+}
+
+function tableError(msg) {
+    document.getElementById('booksBody').innerHTML =
+        `<tr><td colspan="7" class="text-center text-danger py-4">${escHtml(msg)}</td></tr>`;
+}
+
+// ── Parsers — one per format ──────────────────────────────────────────────────
+
+function parseBooks(text, format) {
+    try {
+        if (format === 'json')  return JSON.parse(text);
+        if (format === 'xml')   return parseBooksXml(text);
+        if (format === 'text')  return parseBooksText(text);
+    } catch (e) { console.error('Parse error', e); }
+    return [];
+}
+
+function parseBook(text, format) {
+    try {
+        if (format === 'json')  return JSON.parse(text);
+        if (format === 'xml')   return parseBookXml(text);
+        if (format === 'text')  return parseBookText(text.split('\n')[0]);
+    } catch (e) { console.error('Parse error', e); }
+    return null;
+}
+
+function parseBooksXml(xml) {
+    const doc = new DOMParser().parseFromString(xml, 'application/xml');
+    return Array.from(doc.querySelectorAll('book')).map(xmlToBook);
+}
+
+function parseBookXml(xml) {
+    const doc = new DOMParser().parseFromString(xml, 'application/xml');
+    const node = doc.querySelector('book');
+    return node ? xmlToBook(node) : null;
+}
+
+function xmlToBook(node) {
+    const g = tag => node.querySelector(tag)?.textContent || '';
+    return {
+        id:         parseInt(g('id'))  || 0,
+        title:      g('title'),
+        author:     g('author'),
+        date:       g('date'),
+        genres:     g('genres'),
+        characters: g('characters'),
+        synopsis:   g('synopsis'),
+        cover:      g('cover')
+    };
+}
+
+// Text format: id|title|author|date|genres|characters|synopsis|cover
+function parseBooksText(text) {
+    return text.trim().split('\n')
+        .filter(l => l.trim().length > 0)
+        .map(parseBookText)
+        .filter(Boolean);
+}
+
+function parseBookText(line) {
+    const p = line.split('|');
+    if (p.length < 8) return null;
+    return {
+        id:         parseInt(p[0]) || 0,
+        title:      p[1],
+        author:     p[2],
+        date:       p[3],
+        genres:     p[4],
+        characters: p[5],
+        synopsis:   p[6],
+        cover:      p[7]
+    };
+}
+
+// ── Request body builders ─────────────────────────────────────────────────────
+
+/**
+ * Builds the POST/PUT request body.
+ * JSON for json/text formats, XML for xml format.
+ * This shows the API can receive data in multiple formats too.
+ */
+function buildBody(book, format) {
+    if (format === 'xml') {
+        return `<?xml version="1.0" encoding="UTF-8"?>
+<book>
+  <id>${book.id}</id>
+  <title>${escXml(book.title)}</title>
+  <author>${escXml(book.author)}</author>
+  <date>${escXml(book.date)}</date>
+  <genres>${escXml(book.genres)}</genres>
+  <characters>${escXml(book.characters)}</characters>
+  <synopsis>${escXml(book.synopsis)}</synopsis>
+  <cover>${escXml(book.cover)}</cover>
+</book>`;
+    }
+    return JSON.stringify(book);
+}
+
+// ── Client-side validation ────────────────────────────────────────────────────
+
+function validateBookClient(b) {
+    const errs = [];
+    if (!b.title.trim())  errs.push('Title is required.');
+    if (!b.author.trim()) errs.push('Author is required.');
+    if (!b.date.trim())   errs.push('Date is required.');
+    if (!b.genres.trim()) errs.push('Genres is required.');
+    return errs;
+}
+
+// ── Security helpers ──────────────────────────────────────────────────────────
+
+/** Escapes HTML special characters to prevent XSS when writing to innerHTML. */
+function escHtml(str) {
+    const d = document.createElement('div');
+    d.appendChild(document.createTextNode(String(str ?? '')));
+    return d.innerHTML;
+}
+
+/** Escapes XML special characters for building XML request bodies. */
+function escXml(str) {
+    return String(str ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
+}
+
+/** Extracts an error message from a server error response in any format. */
+function extractErr(text, format) {
+    try {
+        if (format === 'json') return JSON.parse(text)?.error?.message || text;
+        if (format === 'xml') {
+            const doc = new DOMParser().parseFromString(text, 'application/xml');
+            return doc.querySelector('message')?.textContent || text;
+        }
+    } catch (e) {}
+    return text;
+}
+</script>
+</body>
+</html>
