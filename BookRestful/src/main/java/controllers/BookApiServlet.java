@@ -118,7 +118,7 @@ public class BookApiServlet extends HttpServlet {
                 return;
             }
 
-            List<String> errors = ValidationUtil.validateBook(book);
+            List<String> errors = Validation.validateBook(book);
             if (!errors.isEmpty()) {
                 sendError(resp, out, 422, String.join("; ", errors), fmt);
                 return;
@@ -164,7 +164,7 @@ public class BookApiServlet extends HttpServlet {
             }
             book.setId(id);   // URL id takes precedence over any id in the body
 
-            List<String> errors = ValidationUtil.validateBook(book);
+            List<String> errors = Validation.validateBook(book);
             if (!errors.isEmpty()) {
                 sendError(resp, out, 422, String.join("; ", errors), fmt);
                 return;

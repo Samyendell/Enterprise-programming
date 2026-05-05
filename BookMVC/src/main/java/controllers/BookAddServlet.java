@@ -19,7 +19,7 @@ public class BookAddServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		req.setAttribute("book", new Book());
 		req.setAttribute("action", "Add");
-		req.getRequestDispatcher("WEB-INF/veiws/book-form.jsp").forward(req, resp);
+		req.getRequestDispatcher("/WEB-INF/views/book-form.jsp").forward(req, resp);
 	}
 	
 	@Override

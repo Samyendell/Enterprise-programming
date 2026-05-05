@@ -20,10 +20,10 @@ public class BookListServlet extends HttpServlet {
 		try {
 			ArrayList<Book> books = BookDAO.getInstance().getAllBooks();
 			req.setAttribute("books", books);
-			req.getRequestDispatcher("/WEBS-INF/views/books-list.jsp").forward(req, resp);
+			req.getRequestDispatcher("/WEB-INF/views/books-list.jsp").forward(req, resp);
 		} catch (Exception e) {
 			req.setAttribute("error", "Could not load books: " + e.getMessage());
-			req.getRequestDispatcher("/WEBS-INF/views/error.jsp").forward(req, resp);
+			req.getRequestDispatcher("/WEB-INF/views/error.jsp").forward(req, resp);
 		}
 	}
 }

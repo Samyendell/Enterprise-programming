@@ -27,7 +27,7 @@ public class BookEditServlet extends HttpServlet {
 			}
 			req.setAttribute("book", book);
 			req.setAttribute("action", "Edit");
-			req.getRequestDispatcher("/WEB-INF/views/book-form").forward(req, resp);
+			req.getRequestDispatcher("/WEB-INF/views/book-form.jsp").forward(req, resp);
 		} catch (NumberFormatException e) {
 			req.setAttribute("error", "Invalid book id.");
 			req.getRequestDispatcher("/WEB-INF/views/error.jsp").forward(req, resp);
