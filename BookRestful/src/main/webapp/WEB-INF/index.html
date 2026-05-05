@@ -75,6 +75,7 @@
                                     <th>Author</th>
                                     <th>Date</th>
                                     <th>Genres</th>
+                                    <th>Characters</th>
                                     <th>Synopsis</th>
                                     <th class="text-center">Actions</th>
                                 </tr>
@@ -158,11 +159,6 @@
                         <label class="form-label">Synopsis</label>
                         <textarea id="fSynopsis" class="form-control"
                                   rows="3"></textarea>
-                    </div>
-                    <div class="col-12">
-                        <label class="form-label">Cover URL</label>
-                        <input type="text" id="fCover" class="form-control"
-                               maxlength="500" placeholder="https://...">
                     </div>
                 </div>
             </div>
@@ -293,7 +289,7 @@ function clearSearch() {
 function openAddModal() {
     document.getElementById('modalTitle').textContent = 'Add Book';
     ['bookId','fTitle','fAuthor','fDate','fGenres',
-     'fCharacters','fSynopsis','fCover'].forEach(id => {
+     'fCharacters','fSynopsis'].forEach(id => {
         document.getElementById(id).value = '';
     });
     document.getElementById('modalErrors').classList.add('d-none');
@@ -318,7 +314,6 @@ async function openEditModal(id) {
         document.getElementById('fGenres').value     = b.genres     || '';
         document.getElementById('fCharacters').value = b.characters || '';
         document.getElementById('fSynopsis').value   = b.synopsis   || '';
-        document.getElementById('fCover').value      = b.cover      || '';
         document.getElementById('modalErrors').classList.add('d-none');
         bookModal.show();
     } catch (err) {
@@ -335,8 +330,7 @@ async function saveBook() {
         date:       document.getElementById('fDate').value.trim(),
         genres:     document.getElementById('fGenres').value.trim(),
         characters: document.getElementById('fCharacters').value.trim(),
-        synopsis:   document.getElementById('fSynopsis').value.trim(),
-        cover:      document.getElementById('fCover').value.trim()
+        synopsis:   document.getElementById('fSynopsis').value.trim()
     };
 
     // Client-side validation mirrors server-side ValidationUtil
@@ -410,7 +404,7 @@ function renderTable(books) {
 
     if (!books.length) {
         tbody.innerHTML =
-            '<tr><td colspan="7" class="text-center text-muted py-4">No books found.</td></tr>';
+            '<tr><td colspan="8" class="text-center text-muted py-4">No books found.</td></tr>';
         return;
     }
 
@@ -421,6 +415,7 @@ function renderTable(books) {
             <td>${escHtml(b.author)}</td>
             <td>${escHtml(b.date)}</td>
             <td><span class="badge bg-info text-dark">${escHtml(b.genres)}</span></td>
+            <td class="text-muted small">${escHtml(b.characters || '')}</td>
             <td class="truncate text-muted small"
                 title="${escHtml(b.synopsis || '')}">${escHtml(b.synopsis || '')}</td>
             <td class="text-center">
@@ -436,7 +431,7 @@ function renderTable(books) {
 
 function tableError(msg) {
     document.getElementById('booksBody').innerHTML =
-        `<tr><td colspan="7" class="text-center text-danger py-4">${escHtml(msg)}</td></tr>`;
+        `<tr><td colspan="8" class="text-center text-danger py-4">${escHtml(msg)}</td></tr>`;
 }
 
 // ── Parsers — one per format ──────────────────────────────────────────────────
@@ -479,8 +474,7 @@ function xmlToBook(node) {
         date:       g('date'),
         genres:     g('genres'),
         characters: g('characters'),
-        synopsis:   g('synopsis'),
-        cover:      g('cover')
+        synopsis:   g('synopsis')
     };
 }
 
@@ -494,7 +488,7 @@ function parseBooksText(text) {
 
 function parseBookText(line) {
     const p = line.split('|');
-    if (p.length < 8) return null;
+    if (p.length < 7) return null;
     return {
         id:         parseInt(p[0]) || 0,
         title:      p[1],
@@ -502,8 +496,7 @@ function parseBookText(line) {
         date:       p[3],
         genres:     p[4],
         characters: p[5],
-        synopsis:   p[6],
-        cover:      p[7]
+        synopsis:   p[6]
     };
 }
 
@@ -525,7 +518,6 @@ function buildBody(book, format) {
   <genres>${escXml(book.genres)}</genres>
   <characters>${escXml(book.characters)}</characters>
   <synopsis>${escXml(book.synopsis)}</synopsis>
-  <cover>${escXml(book.cover)}</cover>
 </book>`;
     }
     return JSON.stringify(book);

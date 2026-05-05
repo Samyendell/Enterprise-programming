@@ -5,6 +5,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * TODO
+ * 
  * @author syende
  *
  */
@@ -18,8 +19,7 @@ public class Book {
 	String genres;
 	String characters;
 	String synopsis;
-	
-	
+
 	public Book(int id, String title, String author, String date, String genres, String characters, String synopsis) {
 
 		this.id = id;
@@ -29,27 +29,28 @@ public class Book {
 		this.genres = genres;
 		this.characters = characters;
 		this.synopsis = synopsis;
-		
+
 	}
-	
+
 	public Book(String title, String author, String date, String genres, String characters, String synopsis) {
-		
+
 		this.title = title;
 		this.author = author;
 		this.date = date;
 		this.genres = genres;
 		this.characters = characters;
 		this.synopsis = synopsis;
-		
+
 	}
 
-	public Book() {}
+	public Book() {
+	}
 
 	@XmlElement
 	public int getId() {
 		return id;
 	}
-	
+
 	public void setId(int id) {
 		this.id = id;
 	}
@@ -108,9 +109,17 @@ public class Book {
 		this.synopsis = synopsis;
 	}
 
+	/**
+	 * Pipe-delimited format used by TextBookFormatter.
+	 * Format: id|title|author|date|genres|characters|synopsis
+	 */
 	@Override
 	public String toString() {
-		return "Book [id=" + id + ", title=" + title + ", author=" + author + ", date=" + date + ", genres=" + genres
-				+ ", synnopsis=" + synopsis + ", characters=" + characters + "]";
+		return id + "|" + (title != null ? title : "")
+				+ "|" + (author != null ? author : "")
+				+ "|" + (date != null ? date : "")
+				+ "|" + (genres != null ? genres : "")
+				+ "|" + (characters != null ? characters : "")
+				+ "|" + (synopsis != null ? synopsis : "");
 	}
 }

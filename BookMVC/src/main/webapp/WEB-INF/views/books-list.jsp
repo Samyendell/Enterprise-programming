@@ -62,6 +62,7 @@
                         <th>Author</th>
                         <th>Date</th>
                         <th>Genres</th>
+                        <th>Characters</th>
                         <th>Synopsis</th>
                         <th class="text-center">Actions</th>
                     </tr>
@@ -70,7 +71,7 @@
                     <c:choose>
                         <c:when test="${empty books}">
                             <tr>
-                                <td colspan="7" class="text-center text-muted py-4">
+                                <td colspan="8" class="text-center text-muted py-4">
                                     No books found.
                                 </td>
                             </tr>
@@ -87,6 +88,9 @@
                                         <span class="badge bg-info text-dark">
                                             <c:out value="${b.genres}"/>
                                         </span>
+                                    </td>
+                                    <td class="text-muted small">
+                                        <c:out value="${b.characters}"/>
                                     </td>
                                     <td class="synopsis-cell text-muted small">
                                         <c:out value="${b.synopsis}"/>
