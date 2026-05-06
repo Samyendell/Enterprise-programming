@@ -14,8 +14,13 @@ import observer.AuditLogger;
 import observer.BookEvent;
 import observer.BookEventListener;
 
+// NOTE: data access object - all database/storage operations go through here
+// singleton pattern - only one instance exists, shared across all servlets
+// observer pattern - notifies registered listeners (like AuditLogger) after writes
+// currently using in-memory test data, swap to live DB by uncommenting the SQL sections
 public class BookDAO {
 
+	// NOTE: volatile + double-checked locking for thread-safe singleton
 	private static volatile BookDAO instance;
 
 	public static BookDAO getInstance() {
@@ -33,12 +38,15 @@ public class BookDAO {
 	private BookDAO() {
 	}
 
+	// NOTE: observer pattern - list of listeners that get notified on changes
 	private final List<BookEventListener> listeners = new ArrayList<>();
 
+	// NOTE: servlets or startup code can register new listeners here
 	public void register(BookEventListener listener) {
 		listeners.add(listener);
 	}
 
+	// NOTE: called after every insert/update/delete to notify all observers
 	private void notifyListeners(BookEvent event) {
 		for (BookEventListener listener : listeners) {
 			listener.onBookEvent(event);
@@ -144,7 +152,6 @@ public class BookDAO {
 		}
 		return thisBook;
 	}
-	// here !!!!!!!!!!!!!!
 
 	public ArrayList<Book> getAllBooks() {
 

@@ -12,6 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+// NOTE: handles editing existing books
+// GET loads the book by id and shows the form pre-filled with current values
+// POST validates and saves changes, reuses buildBookFromRequest from BookAddServlet
+// redirects after save (PRG pattern)
 @WebServlet("/books/edit")
 public class BookEditServlet extends HttpServlet {
 

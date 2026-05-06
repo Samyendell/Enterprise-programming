@@ -1,32 +1,23 @@
 package util;
 
-/**
- * Factory for BookFormatter instances.
- *
- * === Factory pattern ===
- * The servlet calls BookFormatterFactory.getFormatter(format) and receives
- * a BookFormatter without knowing which concrete class it is.
- * The servlet no longer contains switch/if-else blocks for format handling —
- * that decision is entirely encapsulated here.
- *
- * To add a CSV format: create CsvBookFormatter implements BookFormatter,
- * then add case "csv" below. Nothing else changes.
- */
+// NOTE: factory pattern - creates the right formatter based on a format string
+// the servlet calls getFormatter() and gets back a BookFormatter without knowing the concrete class
+// all the format selection logic is in one place here
+// to support a new format: add a new case and a new formatter class
 public class BookFormatterFactory {
 
-    /**
-     * Returns the appropriate BookFormatter for the requested format.
-     * Defaults to JSON if the format string is null or unrecognised.
-     *
-     * @param format one of "json", "xml", "text" (case-insensitive)
-     */
+    // NOTE: switch on the format string, defaults to JSON for anything unrecognised
     public static BookFormatter getFormatter(String format) {
-        if (format == null) return new JsonBookFormatter();
+        if (format == null)
+            return new JsonBookFormatter();
 
         switch (format.toLowerCase()) {
-            case "xml":  return new XmlBookFormatter();
-            case "text": return new TextBookFormatter();
-            default:     return new JsonBookFormatter();
+            case "xml":
+                return new XmlBookFormatter();
+            case "text":
+                return new TextBookFormatter();
+            default:
+                return new JsonBookFormatter();
         }
     }
 }

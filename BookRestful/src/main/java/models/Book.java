@@ -3,12 +3,11 @@ package models;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlElement;
 
-/**
- * TODO
- * 
- * @author syende
- *
- */
+// NOTE: main data model - represents a single book record
+// @XmlRootElement tells JAXB how to convert this to/from XML
+// @XmlElement on getters marks which fields appear in the XML output
+// also used by GSON for JSON (GSON reads the field names directly)
+// toString() outputs pipe-delimited format for the text formatter
 @XmlRootElement(name = "book")
 public class Book {
 

@@ -24,6 +24,9 @@
         .btn-del:hover { background: #fef2f2; }
         .format-pill { font-size: .7rem; padding: 3px 10px; border-radius: 10px;
                        background: #e2e8f0; color: #475569; font-weight: 600; }
+        .sort-link { color: #334155; text-decoration: none; }
+        .sort-link:hover { color: var(--accent); }
+        .sort-arrow { font-size: .7rem; margin-left: 3px; }
     </style>
 </head>
 <body class="bg-white">
@@ -65,7 +68,7 @@
         <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
             <h6 class="mb-0">
                 All Books
-                <span class="text-muted fw-normal ms-1">(${fn:length(books)})</span>
+                <span class="text-muted fw-normal ms-1">(${totalBooks})</span>
             </h6>
             <span class="format-pill">MVC</span>
         </div>
@@ -73,11 +76,31 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="tbl-header">
                     <tr>
-                        <th style="width:50px">#</th>
-                        <th>Title</th>
-                        <th>Author</th>
-                        <th>Date</th>
-                        <th>Genres</th>
+                        <th style="width:50px">
+                            <a class="sort-link" href="${pageContext.request.contextPath}/books?sort=id&order=${sortField == 'id' && sortOrder == 'asc' ? 'desc' : 'asc'}&size=${pageSize}">#
+                                <c:if test="${sortField == 'id'}"><span class="sort-arrow">${sortOrder == 'asc' ? '&#9650;' : '&#9660;'}</span></c:if>
+                            </a>
+                        </th>
+                        <th>
+                            <a class="sort-link" href="${pageContext.request.contextPath}/books?sort=title&order=${sortField == 'title' && sortOrder == 'asc' ? 'desc' : 'asc'}&size=${pageSize}">Title
+                                <c:if test="${sortField == 'title'}"><span class="sort-arrow">${sortOrder == 'asc' ? '&#9650;' : '&#9660;'}</span></c:if>
+                            </a>
+                        </th>
+                        <th>
+                            <a class="sort-link" href="${pageContext.request.contextPath}/books?sort=author&order=${sortField == 'author' && sortOrder == 'asc' ? 'desc' : 'asc'}&size=${pageSize}">Author
+                                <c:if test="${sortField == 'author'}"><span class="sort-arrow">${sortOrder == 'asc' ? '&#9650;' : '&#9660;'}</span></c:if>
+                            </a>
+                        </th>
+                        <th>
+                            <a class="sort-link" href="${pageContext.request.contextPath}/books?sort=date&order=${sortField == 'date' && sortOrder == 'asc' ? 'desc' : 'asc'}&size=${pageSize}">Date
+                                <c:if test="${sortField == 'date'}"><span class="sort-arrow">${sortOrder == 'asc' ? '&#9650;' : '&#9660;'}</span></c:if>
+                            </a>
+                        </th>
+                        <th>
+                            <a class="sort-link" href="${pageContext.request.contextPath}/books?sort=genres&order=${sortField == 'genres' && sortOrder == 'asc' ? 'desc' : 'asc'}&size=${pageSize}">Genres
+                                <c:if test="${sortField == 'genres'}"><span class="sort-arrow">${sortOrder == 'asc' ? '&#9650;' : '&#9660;'}</span></c:if>
+                            </a>
+                        </th>
                         <th>Characters</th>
                         <th>Synopsis</th>
                         <th class="text-center" style="width:140px">Actions</th>
@@ -123,6 +146,35 @@
                 </tbody>
             </table>
         </div>
+
+        <%-- Pagination controls --%>
+        <c:if test="${totalPages > 1}">
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center py-2">
+            <small class="text-muted">
+                Page ${currentPage} of ${totalPages}
+                (${totalBooks} books total)
+            </small>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item ${currentPage <= 1 ? 'disabled' : ''}">
+                        <a class="page-link"
+                           href="${pageContext.request.contextPath}/books?page=${currentPage - 1}&sort=${sortField}&order=${sortOrder}&size=${pageSize}">Previous</a>
+                    </li>
+                    <c:forEach begin="1" end="${totalPages}" var="p">
+                        <li class="page-item ${p == currentPage ? 'active' : ''}">
+                            <a class="page-link"
+                               href="${pageContext.request.contextPath}/books?page=${p}&sort=${sortField}&order=${sortOrder}&size=${pageSize}">${p}</a>
+                        </li>
+                    </c:forEach>
+                    <li class="page-item ${currentPage >= totalPages ? 'disabled' : ''}">
+                        <a class="page-link"
+                           href="${pageContext.request.contextPath}/books?page=${currentPage + 1}&sort=${sortField}&order=${sortOrder}&size=${pageSize}">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        </c:if>
+
     </div>
 </div>
 

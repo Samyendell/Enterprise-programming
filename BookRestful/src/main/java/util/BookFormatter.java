@@ -3,17 +3,10 @@ package util;
 import models.Book;
 import java.util.ArrayList;
 
-/**
- * Strategy interface for formatting Book data into a specific output format.
- *
- * Part of the Factory pattern — BookFormatterFactory returns an implementation
- * of this interface based on the requested format string.
- *
- * Adding a new format (e.g. CSV) requires only:
- *   1. A new class implementing this interface.
- *   2. One new case in BookFormatterFactory.
- * No existing code changes — Open/Closed Principle.
- */
+// NOTE: strategy pattern - defines the contract for all format handlers
+// each format (JSON, XML, text) has its own class implementing these three methods
+// the servlet works with this interface so it doesn't care which format is actually used
+// adding a new format means: new class + one case in the factory, nothing else changes
 public interface BookFormatter {
 
     /** Serialises a single book to the target format. */

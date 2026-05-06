@@ -15,6 +15,9 @@
                      border-radius: 3px; padding: 2px 8px; font-size: .8rem; display: inline-block; }
         .tbl-header th { background: #f1f5f9; color: #334155; border-bottom: 2px solid #cbd5e1;
                          font-weight: 600; font-size: .85rem; text-transform: uppercase; letter-spacing: .03em; }
+        .tbl-header th a { color: #334155; text-decoration: none; }
+        .tbl-header th a:hover { color: var(--accent); }
+        .sort-arrow { font-size: .65rem; margin-left: 3px; }
         pre.raw-viewer { font-size: .75rem; max-height: 500px; overflow-y: auto;
                          white-space: pre-wrap; word-break: break-all;
                          background: #1e293b; color: #a5f3fc; border-radius: 6px; padding: 12px; }
@@ -131,14 +134,49 @@ function buildBody(book, fmt) {
     return JSON.stringify(book);
 }
 
+// NOTE: client-side validation that mirrors the server-side Validation.java
+// checks length, format, and content rules so the user gets instant feedback
+const CURRENT_YEAR = new Date().getFullYear();
+const AUTHOR_REGEX = /^[a-zA-Z .'\-]+$/;
+const YEAR_REGEX = /^\d{4}$/;
+
+function stripHtml(s) {
+    return s ? s.replace(/<[^>]*>/g, '').trim() : '';
+}
+
 function validateBook(b) {
     const errs = [];
-    if (!b.title || b.title.trim().length < 5)  errs.push('Title must be at least 5 characters.');
-    if (!b.author || b.author.trim().length < 5) errs.push('Author must be at least 5 characters.');
-    if (!b.date || !b.date.trim())               errs.push('Date is required.');
-    if (!b.genres || b.genres.trim().length < 3)  errs.push('Genres must be at least 3 characters.');
-    if (!b.characters || b.characters.trim().length < 5) errs.push('Characters must be at least 5 characters.');
-    if (!b.synopsis || b.synopsis.trim().length < 5) errs.push('Synopsis must be at least 5 characters.');
+    const title = stripHtml(b.title);
+    const author = stripHtml(b.author);
+    const date = stripHtml(b.date);
+    const genres = stripHtml(b.genres);
+    const characters = stripHtml(b.characters);
+    const synopsis = stripHtml(b.synopsis);
+
+    if (!title || title.length < 5) errs.push('Title must be at least 5 characters.');
+    else if (title.length > 150) errs.push('Title must not exceed 150 characters.');
+
+    if (!author || author.length < 5) errs.push('Author must be at least 5 characters.');
+    else if (author.length > 150) errs.push('Author must not exceed 150 characters.');
+    else if (!AUTHOR_REGEX.test(author)) errs.push('Author must only contain letters, spaces, hyphens, and apostrophes.');
+
+    if (!date || !date.trim()) errs.push('Date is required.');
+    else if (!YEAR_REGEX.test(date.trim())) errs.push('Date must be a valid 4-digit year (e.g. 2003).');
+    else {
+        const y = parseInt(date.trim());
+        if (y > CURRENT_YEAR) errs.push('Date cannot be in the future.');
+        else if (y < 1000) errs.push('Date must be a realistic year (1000 or later).');
+    }
+
+    if (!genres || genres.length < 3) errs.push('Genres must be at least 3 characters.');
+    else if (genres.length > 50) errs.push('Genres must not exceed 50 characters.');
+
+    if (!characters || characters.length < 5) errs.push('Characters must be at least 5 characters.');
+    else if (characters.length > 200) errs.push('Characters must not exceed 200 characters.');
+
+    if (!synopsis || synopsis.length < 5) errs.push('Synopsis must be at least 5 characters.');
+    else if (synopsis.length > 1000) errs.push('Synopsis must not exceed 1000 characters.');
+
     return errs;
 }
 
@@ -239,13 +277,61 @@ function BookRow({ book, onEdit, onDelete }) {
     );
 }
 
-/** Books table — maps over the book list and renders rows */
-function BookTable({ books, loading, error, format, onEdit, onDelete }) {
+/** Sortable column header — clicking toggles asc/desc */
+function SortHeader({ label, field, sortField, sortOrder, onSort }) {
+    const active = sortField === field;
+    const arrow = active ? (sortOrder === 'asc' ? '\u25B2' : '\u25BC') : '';
+    return (
+        <th>
+            <a href="#" onClick={e => { e.preventDefault();
+                onSort(field, active && sortOrder === 'asc' ? 'desc' : 'asc'); }}>
+                {label} {arrow && <span className="sort-arrow">{arrow}</span>}
+            </a>
+        </th>
+    );
+}
+
+/** Pagination controls */
+function Pagination({ currentPage, totalPages, totalBooks, pageSize, onPageChange }) {
+    if (totalPages <= 1) return null;
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) pages.push(i);
+    return (
+        <div className="card-footer bg-white d-flex justify-content-between align-items-center py-2">
+            <small className="text-muted">
+                Page {currentPage} of {totalPages} ({totalBooks} books total)
+            </small>
+            <nav>
+                <ul className="pagination pagination-sm mb-0">
+                    <li className={`page-item ${currentPage <= 1 ? 'disabled' : ''}`}>
+                        <a className="page-link" href="#"
+                           onClick={e => { e.preventDefault(); onPageChange(currentPage - 1); }}>Previous</a>
+                    </li>
+                    {pages.map(p => (
+                        <li key={p} className={`page-item ${p === currentPage ? 'active' : ''}`}>
+                            <a className="page-link" href="#"
+                               onClick={e => { e.preventDefault(); onPageChange(p); }}>{p}</a>
+                        </li>
+                    ))}
+                    <li className={`page-item ${currentPage >= totalPages ? 'disabled' : ''}`}>
+                        <a className="page-link" href="#"
+                           onClick={e => { e.preventDefault(); onPageChange(currentPage + 1); }}>Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    );
+}
+
+/** Books table — maps over the book list and renders rows with sortable headers */
+function BookTable({ books, loading, error, format, onEdit, onDelete,
+                     sortField, sortOrder, onSort,
+                     currentPage, totalPages, totalBooks, pageSize, onPageChange }) {
     return (
         <div className="card border-0 shadow-sm">
             <div className="card-header bg-white d-flex justify-content-between align-items-center py-3">
                 <h6 className="mb-0">
-                    All Books <span className="text-muted fw-normal ms-1">({books.length})</span>
+                    All Books <span className="text-muted fw-normal ms-1">({totalBooks})</span>
                 </h6>
                 <span className="format-pill">{format.toUpperCase()}</span>
             </div>
@@ -253,11 +339,11 @@ function BookTable({ books, loading, error, format, onEdit, onDelete }) {
                 <table className="table table-hover align-middle mb-0">
                     <thead className="tbl-header">
                         <tr>
-                            <th style={{width:'50px'}}>#</th>
-                            <th>Title</th>
-                            <th>Author</th>
-                            <th>Date</th>
-                            <th>Genres</th>
+                            <SortHeader label="#" field="id" sortField={sortField} sortOrder={sortOrder} onSort={onSort} />
+                            <SortHeader label="Title" field="title" sortField={sortField} sortOrder={sortOrder} onSort={onSort} />
+                            <SortHeader label="Author" field="author" sortField={sortField} sortOrder={sortOrder} onSort={onSort} />
+                            <SortHeader label="Date" field="date" sortField={sortField} sortOrder={sortOrder} onSort={onSort} />
+                            <SortHeader label="Genres" field="genres" sortField={sortField} sortOrder={sortOrder} onSort={onSort} />
                             <th>Characters</th>
                             <th>Synopsis</th>
                             <th className="text-center" style={{width:'140px'}}>Actions</th>
@@ -276,6 +362,8 @@ function BookTable({ books, loading, error, format, onEdit, onDelete }) {
                     </tbody>
                 </table>
             </div>
+            <Pagination currentPage={currentPage} totalPages={totalPages}
+                        totalBooks={totalBooks} pageSize={pageSize} onPageChange={onPageChange} />
         </div>
     );
 }
@@ -397,6 +485,19 @@ function App() {
     const [rawMethod, setRawMethod] = useState('');
     const [rawText, setRawText]   = useState('');
 
+    // Sorting state
+    const [sortField, setSortField] = useState('title');
+    const [sortOrder, setSortOrder] = useState('asc');
+
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages]   = useState(1);
+    const [totalBooks, setTotalBooks]   = useState(0);
+    const PAGE_SIZE = 5;
+
+    // Search state
+    const [searchQuery, setSearchQuery] = useState('');
+
     // Modal state
     const [modalShow, setModalShow]     = useState(false);
     const [modalMode, setModalMode]     = useState('add');
@@ -409,38 +510,58 @@ function App() {
         setRawText(text);
     };
 
-    /* ── Load all books ── */
-    const loadAll = useCallback(async () => {
+    /* -- Load books with sort and pagination -- */
+    const loadBooks = useCallback(async (page, sort, order, search) => {
         setLoading(true);
         setTableErr('');
-        const url = `${API}?format=${format}`;
+        let url = `${API}?format=${format}&sort=${sort}&order=${order}&page=${page}&size=${PAGE_SIZE}`;
+        if (search) url += `&search=${encodeURIComponent(search)}`;
         try {
             const res  = await fetch(url, { headers: { Accept: ACCEPT[format] } });
             const text = await res.text();
             showRaw('GET', url, text);
             setBooks(parseBooks(text, format));
+            // NOTE: read pagination info from response headers
+            const tc = res.headers.get('X-Total-Count');
+            const tp = res.headers.get('X-Total-Pages');
+            const cp = res.headers.get('X-Current-Page');
+            if (tc) setTotalBooks(parseInt(tc));
+            if (tp) setTotalPages(parseInt(tp));
+            if (cp) setCurrentPage(parseInt(cp));
         } catch (err) {
             setTableErr('Could not connect to API: ' + err.message);
         }
         setLoading(false);
     }, [format]);
 
-    useEffect(() => { loadAll(); }, [loadAll]);
+    useEffect(() => { loadBooks(currentPage, sortField, sortOrder, searchQuery); }, [format]);
 
-    /* ── Search ── */
-    const handleSearch = async (q) => {
+    const loadAll = () => {
+        setSearchQuery('');
+        setCurrentPage(1);
+        loadBooks(1, sortField, sortOrder, '');
+    };
+
+    /* -- Sort handler -- */
+    const handleSort = (field, order) => {
+        setSortField(field);
+        setSortOrder(order);
+        setCurrentPage(1);
+        loadBooks(1, field, order, searchQuery);
+    };
+
+    /* -- Page change handler -- */
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        loadBooks(page, sortField, sortOrder, searchQuery);
+    };
+
+    /* -- Search -- */
+    const handleSearch = (q) => {
         if (!q.trim()) { loadAll(); return; }
-        setLoading(true);
-        const url = `${API}?format=${format}&search=${encodeURIComponent(q)}`;
-        try {
-            const res  = await fetch(url, { headers: { Accept: ACCEPT[format] } });
-            const text = await res.text();
-            showRaw('GET', url, text);
-            setBooks(parseBooks(text, format));
-        } catch (err) {
-            setTableErr('Search failed: ' + err.message);
-        }
-        setLoading(false);
+        setSearchQuery(q);
+        setCurrentPage(1);
+        loadBooks(1, sortField, sortOrder, q);
     };
 
     /* ── Open add modal ── */
@@ -500,7 +621,7 @@ function App() {
             showRaw(method, url, text);
             if (res.ok || res.status === 201) {
                 setModalShow(false);
-                loadAll();
+                loadBooks(currentPage, sortField, sortOrder, searchQuery);
             } else {
                 setModalErrors(['Server: ' + extractErr(text, format)]);
             }
@@ -515,7 +636,7 @@ function App() {
         try {
             const res = await fetch(url, { method: 'DELETE' });
             showRaw('DELETE', url, res.status === 204 ? '204 No Content' : await res.text());
-            loadAll();
+            loadBooks(currentPage, sortField, sortOrder, searchQuery);
         } catch (err) {
             setTableErr('Delete failed: ' + err.message);
         }
@@ -529,7 +650,11 @@ function App() {
                     <div className="col-xl-8">
                         <SearchBar onSearch={handleSearch} onClear={loadAll} />
                         <BookTable books={books} loading={loading} error={tableErr}
-                                   format={format} onEdit={openEdit} onDelete={handleDelete} />
+                                   format={format} onEdit={openEdit} onDelete={handleDelete}
+                                   sortField={sortField} sortOrder={sortOrder} onSort={handleSort}
+                                   currentPage={currentPage} totalPages={totalPages}
+                                   totalBooks={totalBooks} pageSize={PAGE_SIZE}
+                                   onPageChange={handlePageChange} />
                     </div>
                     <div className="col-xl-4">
                         <RawViewer method={rawMethod} text={rawText} />

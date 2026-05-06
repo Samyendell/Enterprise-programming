@@ -5,12 +5,9 @@ import com.google.gson.GsonBuilder;
 import models.Book;
 import java.util.ArrayList;
 
-/**
- * Concrete formatter — produces JSON using GSON.
- *
- * GSON serialises Java objects to JSON using field names as keys.
- * The single static GSON instance is reused across calls (thread-safe).
- */
+// NOTE: strategy pattern - handles JSON format using the GSON library
+// GSON converts Java objects to/from JSON automatically using field names
+// static GSON instance is thread-safe and reused
 public class JsonBookFormatter implements BookFormatter {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
@@ -30,7 +27,7 @@ public class JsonBookFormatter implements BookFormatter {
         return "application/json;charset=UTF-8";
     }
 
-    /** Also used for deserialising incoming JSON request bodies. */
+    // NOTE: used by the servlet to parse incoming JSON POST/PUT bodies
     public static Book fromJson(String json) {
         return GSON.fromJson(json, Book.class);
     }

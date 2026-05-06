@@ -3,12 +3,9 @@ package models;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlElement;
 
-/**
- * TODO
- * 
- * @author syende
- *
- */
+// NOTE: data model for a book - holds all the fields that match the database columns
+// JAXB annotations let this class be converted to/from XML if needed
+// used by servlets, DAO, and JSP views
 @XmlRootElement(name = "book")
 public class Book {
 

@@ -12,25 +12,29 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 
+// NOTE: handles the search page
+// if no query param, shows the empty search form
+// if query exists, sanitises it through Validation.validateSearch then searches the DAO
+// search matches against title, author, and genres
 @WebServlet("/books/search")
 public class BookSearchServlet extends HttpServlet {
-	
+
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		String raw = req.getParameter("q");
-		
+
 		if (raw == null) {
 			req.getRequestDispatcher("/WEB-INF/views/search.jsp").forward(req, resp);
 			return;
 		}
-		
+
 		String query = Validation.validateSearch(raw);
 		if (query.isEmpty()) {
 			req.setAttribute("error", "Please enter a search term");
 			req.getRequestDispatcher("/WEB-INF/views/search.jsp").forward(req, resp);
 			return;
 		}
-		
+
 		try {
 			ArrayList<Book> results = BookDAO.getInstance().searchBooks(query);
 			req.setAttribute("results", results);
@@ -39,9 +43,8 @@ public class BookSearchServlet extends HttpServlet {
 		} catch (Exception e) {
 			req.setAttribute("error", "Search failed: " + e.getMessage());
 			req.getRequestDispatcher("/WEB-INF/views/error.jsp").forward(req, resp);
-			
+
 		}
 	}
-	
-	
+
 }

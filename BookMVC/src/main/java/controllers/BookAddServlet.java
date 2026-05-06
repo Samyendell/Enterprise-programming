@@ -12,6 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
+// NOTE: handles adding new books
+// GET shows the empty form, POST processes the submission
+// validates input server-side, if errors exist re-shows the form with messages
+// on success redirects to the book list (PRG pattern to avoid duplicate submissions)
 @WebServlet("/books/add")
 public class BookAddServlet extends HttpServlet {
 
