@@ -174,115 +174,157 @@ public class BookDAO {
 	}
 
 	public Book getBookById(int id) {
-		openConnection();
-		Book book = null;
-
-		try {
-			PreparedStatement ps = conn.prepareStatement(
-					"select * from books where id=?");
-			ps.setInt(1, id);
-			ResultSet rs = ps.executeQuery();
-			if (rs.next())
-				book = getNextBook(rs);
-			ps.close();
-			closeConnection();
-		} catch (SQLException se) {
-			System.out.println(se);
+		// ── TEST DATA ─────────────────────────────────────────────────────────
+		for (Book b : store) {
+			if (b.getId() == id)
+				return b;
 		}
-		return book;
+		return null;
+		// ── END TEST DATA ─────────────────────────────────────────────────────
+
+		/*
+		 * ── LIVE DB ───────────────────────────────────────────────────────────
+		 * openConnection();
+		 * Book book = null;
+		 * try {
+		 * PreparedStatement ps =
+		 * conn.prepareStatement("select * from books where id=?");
+		 * ps.setInt(1, id);
+		 * ResultSet rs = ps.executeQuery();
+		 * if (rs.next()) book = getNextBook(rs);
+		 * ps.close();
+		 * closeConnection();
+		 * } catch (SQLException se) { System.out.println(se); }
+		 * return book;
+		 * ── END LIVE DB ───────────────────────────────────────────────────────
+		 */
 	}
 
 	public ArrayList<Book> searchBooks(String search) {
+		// ── TEST DATA ─────────────────────────────────────────────────────────
 		ArrayList<Book> results = new ArrayList<>();
-		openConnection();
-
-		try {
-			PreparedStatement ps = conn.prepareStatement(
-					"select * from books " +
-							"where title like ? or author like ? or genres like ? " +
-							"order by title");
-			String pattern = "%" + search + "%";
-			ps.setString(1, pattern);
-			ps.setString(2, pattern);
-			ps.setString(3, pattern);
-			ResultSet rs = ps.executeQuery();
-			while (rs.next())
-				results.add(getNextBook(rs));
-			ps.close();
-			closeConnection();
-		} catch (SQLException se) {
-			System.out.println(se);
+		String lower = search.toLowerCase();
+		for (Book b : store) {
+			if (contains(b.getTitle(), lower) ||
+					contains(b.getAuthor(), lower) ||
+					contains(b.getGenres(), lower)) {
+				results.add(b);
+			}
 		}
 		return results;
+		// ── END TEST DATA ─────────────────────────────────────────────────────
+
+		/*
+		 * ── LIVE DB ───────────────────────────────────────────────────────────
+		 * ArrayList<Book> results = new ArrayList<>();
+		 * openConnection();
+		 * try {
+		 * PreparedStatement ps = conn.prepareStatement(
+		 * "select * from books where title like ? or author like ? or genres like ? order by title"
+		 * );
+		 * String pattern = "%" + search + "%";
+		 * ps.setString(1, pattern);
+		 * ps.setString(2, pattern);
+		 * ps.setString(3, pattern);
+		 * ResultSet rs = ps.executeQuery();
+		 * while (rs.next()) results.add(getNextBook(rs));
+		 * ps.close();
+		 * closeConnection();
+		 * } catch (SQLException se) { System.out.println(se); }
+		 * return results;
+		 * ── END LIVE DB ───────────────────────────────────────────────────────
+		 */
 	}
 
 	public int insertBook(Book b) throws SQLException {
-		openConnection();
-		int generatedId = -1;
-
-		PreparedStatement ps = conn.prepareStatement(
-				"insert into books (title, author, date, genres, characters,"
-						+ " synopsis) values (?, ?, ?, ?, ?, ?)",
-				Statement.RETURN_GENERATED_KEYS);
-
-		ps.setString(1, b.getTitle());
-		ps.setString(2, b.getAuthor());
-		ps.setString(3, b.getDate());
-		ps.setString(4, b.getGenres());
-		ps.setString(5, b.getCharacters());
-		ps.setString(6, b.getSynopsis());
-		ps.executeUpdate();
-
-		ResultSet keys = ps.getGeneratedKeys();
-		if (keys.next())
-			generatedId = keys.getInt(1);
-
-		ps.close();
-		closeConnection();
-
-		b.setId(generatedId);
+		// ── TEST DATA ─────────────────────────────────────────────────────────
+		b.setId(nextId++);
+		store.add(b);
 		notifyListeners(new BookEvent(BookEvent.Type.CREATE, b));
+		return b.getId();
+		// ── END TEST DATA ─────────────────────────────────────────────────────
 
-		return generatedId;
+		/*
+		 * ── LIVE DB ───────────────────────────────────────────────────────────
+		 * openConnection();
+		 * int generatedId = -1;
+		 * PreparedStatement ps = conn.prepareStatement(
+		 * "insert into books (title, author, date, genres, characters, synopsis) values (?, ?, ?, ?, ?, ?)"
+		 * ,
+		 * Statement.RETURN_GENERATED_KEYS);
+		 * ps.setString(1, b.getTitle());
+		 * ps.setString(2, b.getAuthor());
+		 * ps.setString(3, b.getDate());
+		 * ps.setString(4, b.getGenres());
+		 * ps.setString(5, b.getCharacters());
+		 * ps.setString(6, b.getSynopsis());
+		 * ps.executeUpdate();
+		 * ResultSet keys = ps.getGeneratedKeys();
+		 * if (keys.next()) generatedId = keys.getInt(1);
+		 * ps.close();
+		 * closeConnection();
+		 * b.setId(generatedId);
+		 * notifyListeners(new BookEvent(BookEvent.Type.CREATE, b));
+		 * return generatedId;
+		 * ── END LIVE DB ───────────────────────────────────────────────────────
+		 */
 	}
 
 	public int updateBook(Book b) throws SQLException {
-		openConnection();
+		// ── TEST DATA ─────────────────────────────────────────────────────────
+		for (int i = 0; i < store.size(); i++) {
+			if (store.get(i).getId() == b.getId()) {
+				store.set(i, b);
+				notifyListeners(new BookEvent(BookEvent.Type.UPDATE, b));
+				return 1;
+			}
+		}
+		return 0;
+		// ── END TEST DATA ─────────────────────────────────────────────────────
 
-		PreparedStatement ps = conn.prepareStatement(
-				"update books set title=?, author=?, date=?, "
-						+ "genres=?, characters=?, synopsis=? where id=?");
-
-		ps.setString(1, b.getTitle());
-		ps.setString(2, b.getAuthor());
-		ps.setString(3, b.getDate());
-		ps.setString(4, b.getGenres());
-		ps.setString(5, b.getCharacters());
-		ps.setString(6, b.getSynopsis());
-		ps.setInt(7, b.getId());
-
-		int rows = ps.executeUpdate();
-		ps.close();
-		closeConnection();
-
-		notifyListeners(new BookEvent(BookEvent.Type.UPDATE, b));
-
-		return rows;
+		/*
+		 * ── LIVE DB ───────────────────────────────────────────────────────────
+		 * openConnection();
+		 * PreparedStatement ps = conn.prepareStatement(
+		 * "update books set title=?, author=?, date=?, genres=?, characters=?, synopsis=? where id=?"
+		 * );
+		 * ps.setString(1, b.getTitle());
+		 * ps.setString(2, b.getAuthor());
+		 * ps.setString(3, b.getDate());
+		 * ps.setString(4, b.getGenres());
+		 * ps.setString(5, b.getCharacters());
+		 * ps.setString(6, b.getSynopsis());
+		 * ps.setInt(7, b.getId());
+		 * int rows = ps.executeUpdate();
+		 * ps.close();
+		 * closeConnection();
+		 * notifyListeners(new BookEvent(BookEvent.Type.UPDATE, b));
+		 * return rows;
+		 * ── END LIVE DB ───────────────────────────────────────────────────────
+		 */
 	}
 
 	public int deleteBook(Book b) throws SQLException {
-		openConnection();
+		// ── TEST DATA ─────────────────────────────────────────────────────────
+		boolean removed = store.removeIf(book -> book.getId() == b.getId());
+		if (removed) {
+			notifyListeners(new BookEvent(BookEvent.Type.DELETE, b));
+			return 1;
+		}
+		return 0;
+		// ── END TEST DATA ─────────────────────────────────────────────────────
 
-		PreparedStatement ps = conn.prepareStatement(
-				"delete from books where id=?");
-		ps.setInt(1, b.getId());
-
-		int rows = ps.executeUpdate();
-		ps.close();
-		closeConnection();
-
-		notifyListeners(new BookEvent(BookEvent.Type.DELETE, b));
-
-		return rows;
+		/*
+		 * ── LIVE DB ───────────────────────────────────────────────────────────
+		 * openConnection();
+		 * PreparedStatement ps = conn.prepareStatement("delete from books where id=?");
+		 * ps.setInt(1, b.getId());
+		 * int rows = ps.executeUpdate();
+		 * ps.close();
+		 * closeConnection();
+		 * notifyListeners(new BookEvent(BookEvent.Type.DELETE, b));
+		 * return rows;
+		 * ── END LIVE DB ───────────────────────────────────────────────────────
+		 */
 	}
 }

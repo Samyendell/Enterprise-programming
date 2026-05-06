@@ -138,7 +138,7 @@ function startDelete(id, btn) {
                 '<span>Delete this book?</span>' +
                 '<div class="d-flex gap-2">' +
                     '<button class="btn btn-sm btn-outline-secondary" ' +
-                        'onclick="cancelDelete(this, \'' + escape(cells) + '\')"'>Go Back</button>' +
+                        'onclick="cancelDelete(this, \'' + escape(cells) + '\')">Go Back</button>' +
                     '<form method="post" action="${pageContext.request.contextPath}/books/delete" style="display:inline">' +
                         '<input type="hidden" name="id" value="' + id + '">' +
                         '<button type="submit" class="btn btn-sm btn-danger">Confirm Removal</button>' +
