@@ -161,9 +161,14 @@ function Navbar({ format, onFormatChange, onAddClick }) {
     return (
         <nav className="navbar navbar-custom mb-4">
             <div className="container-fluid">
-                <span className="navbar-brand text-white fw-bold">Book Library</span>
                 <div className="d-flex align-items-center gap-3">
-                    <label className="text-white-50 small mb-0">Data format:</label>
+                    <span className="navbar-brand text-white fw-bold mb-0">Book Library</span>
+                    <button className="btn btn-light btn-sm" onClick={onAddClick}>
+                        New Entry
+                    </button>
+                </div>
+                <div className="d-flex align-items-center gap-3">
+                    <label className="text-white-50 small mb-0">Format:</label>
                     <select className="form-select form-select-sm"
                             style={{width:'auto'}} value={format}
                             onChange={e => onFormatChange(e.target.value)}>
@@ -171,9 +176,6 @@ function Navbar({ format, onFormatChange, onAddClick }) {
                         <option value="xml">XML</option>
                         <option value="text">TEXT</option>
                     </select>
-                    <button className="btn btn-light btn-sm" onClick={onAddClick}>
-                        Add Book
-                    </button>
                 </div>
             </div>
         </nav>
@@ -188,8 +190,8 @@ function SearchBar({ onSearch, onClear }) {
         <div className="input-group mb-3">
             <input type="text" className="form-control" placeholder="Search by title, author or genre..."
                    maxLength={200} value={q} onChange={e => setQ(e.target.value)} onKeyUp={handleKey} />
-            <button className="btn btn-outline-secondary" onClick={() => onSearch(q)}>Search</button>
-            <button className="btn btn-outline-secondary" onClick={() => { setQ(''); onClear(); }}>Clear</button>
+            <button className="btn btn-outline-secondary" onClick={() => onSearch(q)}>Go</button>
+            <button className="btn btn-outline-secondary" onClick={() => { setQ(''); onClear(); }}>Reset</button>
         </div>
     );
 }
@@ -206,10 +208,10 @@ function BookRow({ book, onEdit, onDelete }) {
                         <span>Delete <strong>{book.title}</strong>?</span>
                         <div className="d-flex gap-2">
                             <button className="btn btn-sm btn-outline-secondary"
-                                    onClick={() => setConfirming(false)}>Cancel</button>
+                                    onClick={() => setConfirming(false)}>Go Back</button>
                             <button className="btn btn-sm btn-danger"
                                     onClick={() => { setConfirming(false); onDelete(book.id); }}>
-                                Yes, delete
+                                Confirm Removal
                             </button>
                         </div>
                     </div>
@@ -230,8 +232,8 @@ function BookRow({ book, onEdit, onDelete }) {
                 {book.synopsis}
             </td>
             <td className="text-center text-nowrap">
-                <button className="btn btn-sm btn-edit me-1" onClick={() => onEdit(book.id)}>Edit</button>
-                <button className="btn btn-sm btn-del" onClick={() => setConfirming(true)}>Delete</button>
+                <button className="btn btn-sm btn-del me-1" onClick={() => setConfirming(true)}>Remove</button>
+                <button className="btn btn-sm btn-edit" onClick={() => onEdit(book.id)}>Modify</button>
             </td>
         </tr>
     );
@@ -325,7 +327,7 @@ function BookFormModal({ show, mode, initial, errors, onSave, onClose }) {
             <div className="modal-dialog modal-lg">
                 <div className="modal-content">
                     <div className="modal-header">
-                        <h5 className="modal-title">{mode === 'edit' ? 'Edit Book' : 'Add Book'}</h5>
+                        <h5 className="modal-title">{mode === 'edit' ? 'Modify Book' : 'New Entry'}</h5>
                         <button type="button" className="btn-close" onClick={onClose}></button>
                     </div>
                     <form onSubmit={handleSubmit}>
@@ -371,10 +373,10 @@ function BookFormModal({ show, mode, initial, errors, onSave, onClose }) {
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" onClick={onClose}>Cancel</button>
+                            <button type="button" className="btn btn-secondary" onClick={onClose}>Discard</button>
                             <button type="submit" className="btn text-white"
                                     style={{background:'var(--accent)'}}>
-                                {mode === 'edit' ? 'Update' : 'Add'}
+                                {mode === 'edit' ? 'Save Changes' : 'Submit'}
                             </button>
                         </div>
                     </form>

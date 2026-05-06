@@ -22,9 +22,11 @@
 
 <nav class="navbar navbar-custom mb-4">
     <div class="container">
-        <span class="navbar-brand text-white fw-bold">Book Library</span>
-        <a href="${pageContext.request.contextPath}/books"
-           class="btn btn-outline-light btn-sm">All Books</a>
+        <div class="d-flex align-items-center gap-3">
+            <span class="navbar-brand text-white fw-bold mb-0">Book Library</span>
+            <a href="${pageContext.request.contextPath}/books"
+               class="btn btn-outline-light btn-sm">View All</a>
+        </div>
     </div>
 </nav>
 
@@ -40,7 +42,7 @@
                    name="q" value="<c:out value='${query}'/>"
                    placeholder="Search by title, author or genre..."
                    maxlength="200" required>
-            <button class="btn btn-outline-secondary" type="submit">Search</button>
+            <button class="btn btn-outline-secondary" type="submit">Go</button>
         </div>
     </form>
 
@@ -80,7 +82,7 @@
                                     </small>
                                 </div>
                                 <a href="${pageContext.request.contextPath}/books/edit?id=${b.id}"
-                                   class="btn btn-sm btn-edit">Edit</a>
+                                   class="btn btn-sm btn-edit">Modify</a>
                             </div>
                         </div>
                     </c:forEach>

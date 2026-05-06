@@ -45,12 +45,56 @@ public class BookDAO {
 		}
 	}
 
+	// ═══════════════════════════════════════════════════════════════════════
+	// IN-MEMORY TEST STORE
+	// Remove this block and uncomment the LIVE DB sections when deploying
+	// ═══════════════════════════════════════════════════════════════════════
+
+	private final ArrayList<Book> store = new ArrayList<Book>() {
+		{
+			add(new Book(1, "The Kite Runner",
+					"Khaled Hosseini", "2003",
+					"Fiction, Drama",
+					"Amir, Hassan, Baba",
+					"A story of friendship and redemption set in Afghanistan."));
+			add(new Book(2, "1984",
+					"George Orwell", "1949",
+					"Dystopian, Political Fiction",
+					"Winston Smith, Julia, O'Brien",
+					"A totalitarian future society under constant surveillance."));
+			add(new Book(3, "To Kill a Mockingbird",
+					"Harper Lee", "1960",
+					"Fiction, Legal Drama",
+					"Scout, Atticus, Boo Radley",
+					"Racial injustice in the American South."));
+			add(new Book(4, "Clean Code",
+					"Robert C. Martin", "2008",
+					"Programming",
+					"Uncle Bob",
+					"Principles and practices for writing readable code."));
+			add(new Book(5, "Dune",
+					"Frank Herbert", "1965",
+					"Science Fiction",
+					"Paul Atreides, Lady Jessica, Baron Harkonnen",
+					"A desert planet holds the universe's most valuable resource."));
+		}
+	};
+
+	private int nextId = 6;
+
+	private boolean contains(String field, String term) {
+		return field != null && field.toLowerCase().contains(term);
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════
+	// DATABASE CONNECTION — update these when switching to live DB
+	// ═══════════════════════════════════════════════════════════════════════
+
 	Book oneBook = null;
 	Connection conn = null;
 	Statement stmt = null;
 	String user = "YOUR_MUDFOOT_USERNAME";
 	String password = "YOUR_MUDFOOT_PASSWORD";
-	// Note none default port used, 6306 not 3306
 	String url = "jdbc:mysql://mudfoot.doc.stu.mmu.ac.uk:6306/" + user;
 
 	// public BookDAO() {}
@@ -104,26 +148,29 @@ public class BookDAO {
 
 	public ArrayList<Book> getAllBooks() {
 
-		ArrayList<Book> allBooks = new ArrayList<Book>();
-		openConnection();
+		// ── TEST DATA ─────────────────────────────────────────────────────────
+		return new ArrayList<>(store);
+		// ── END TEST DATA ─────────────────────────────────────────────────────
 
-		// Create select statement and execute it
-		try {
-			String selectSQL = "select * from books";
-			ResultSet rs1 = stmt.executeQuery(selectSQL);
-			// Retrieve the results
-			while (rs1.next()) {
-				oneBook = getNextBook(rs1);
-				allBooks.add(oneBook);
-			}
-
-			stmt.close();
-			closeConnection();
-		} catch (SQLException se) {
-			System.out.println(se);
-		}
-
-		return allBooks;
+		/*
+		 * ── LIVE DB: uncomment this block and remove the TEST DATA line above ──
+		 *
+		 * ArrayList<Book> allBooks = new ArrayList<Book>();
+		 * openConnection();
+		 * try {
+		 * String selectSQL = "select * from books";
+		 * ResultSet rs1 = stmt.executeQuery(selectSQL);
+		 * while (rs1.next()) {
+		 * oneBook = getNextBook(rs1);
+		 * allBooks.add(oneBook);
+		 * }
+		 * stmt.close();
+		 * closeConnection();
+		 * } catch (SQLException se) { System.out.println(se); }
+		 * return allBooks;
+		 *
+		 * ── END LIVE DB ───────────────────────────────────────────────────────
+		 */
 	}
 
 	public Book getBookById(int id) {

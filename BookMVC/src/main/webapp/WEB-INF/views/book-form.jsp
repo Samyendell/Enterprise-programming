@@ -18,9 +18,11 @@
 
 <nav class="navbar navbar-custom mb-4">
     <div class="container-fluid">
-        <span class="navbar-brand text-white fw-bold">Book Library</span>
-        <a href="${pageContext.request.contextPath}/books"
-           class="btn btn-outline-light btn-sm">Back to List</a>
+        <div class="d-flex align-items-center gap-3">
+            <span class="navbar-brand text-white fw-bold mb-0">Book Library</span>
+            <a href="${pageContext.request.contextPath}/books"
+               class="btn btn-outline-light btn-sm">View All</a>
+        </div>
     </div>
 </nav>
 
@@ -111,13 +113,13 @@
             </div>
         </div>
 
-        <div class="mt-4 d-flex gap-2">
+        <div class="mt-4 d-flex gap-2 justify-content-end">
+            <a href="${pageContext.request.contextPath}/books"
+               class="btn btn-secondary">Discard</a>
             <button type="submit" class="btn text-white"
                     style="background:var(--accent);">
-                ${action == 'Edit' ? 'Update' : 'Add'} Book
+                ${action == 'Edit' ? 'Save Changes' : 'Submit'}
             </button>
-            <a href="${pageContext.request.contextPath}/books"
-               class="btn btn-secondary">Cancel</a>
         </div>
     </form>
 </div>

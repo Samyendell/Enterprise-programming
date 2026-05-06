@@ -30,13 +30,13 @@
 
 <nav class="navbar navbar-custom mb-4">
     <div class="container-fluid">
-        <span class="navbar-brand text-white fw-bold">Book Library</span>
-        <div class="d-flex gap-2">
-            <a href="${pageContext.request.contextPath}/books/search"
-               class="btn btn-outline-light btn-sm">Search</a>
+        <div class="d-flex align-items-center gap-3">
+            <span class="navbar-brand text-white fw-bold mb-0">Book Library</span>
             <a href="${pageContext.request.contextPath}/books/add"
-               class="btn btn-light btn-sm">Add Book</a>
+               class="btn btn-light btn-sm">New Entry</a>
         </div>
+        <a href="${pageContext.request.contextPath}/books/search"
+           class="btn btn-outline-light btn-sm">Find Books</a>
     </div>
 </nav>
 
@@ -111,10 +111,10 @@
                                         <c:out value="${b.synopsis}"/>
                                     </td>
                                     <td class="text-center text-nowrap">
-                                        <a href="${pageContext.request.contextPath}/books/edit?id=${b.id}"
-                                           class="btn btn-sm btn-edit me-1">Edit</a>
                                         <button type="button" class="btn btn-sm btn-del"
-                                                onclick="startDelete(${b.id}, this)">Delete</button>
+                                                onclick="startDelete(${b.id}, this)">Remove</button>
+                                        <a href="${pageContext.request.contextPath}/books/edit?id=${b.id}"
+                                           class="btn btn-sm btn-edit">Modify</a>
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -138,10 +138,10 @@ function startDelete(id, btn) {
                 '<span>Delete this book?</span>' +
                 '<div class="d-flex gap-2">' +
                     '<button class="btn btn-sm btn-outline-secondary" ' +
-                        'onclick="cancelDelete(this, \'' + escape(cells) + '\')">Cancel</button>' +
+                        'onclick="cancelDelete(this, \'' + escape(cells) + '\')"'>Go Back</button>' +
                     '<form method="post" action="${pageContext.request.contextPath}/books/delete" style="display:inline">' +
                         '<input type="hidden" name="id" value="' + id + '">' +
-                        '<button type="submit" class="btn btn-sm btn-danger">Yes, delete</button>' +
+                        '<button type="submit" class="btn btn-sm btn-danger">Confirm Removal</button>' +
                     '</form>' +
                 '</div>' +
             '</div>' +
