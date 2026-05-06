@@ -327,7 +327,7 @@ function BookFormModal({ show, mode, initial, errors, onSave, onClose }) {
             <div className="modal-dialog modal-lg">
                 <div className="modal-content">
                     <div className="modal-header">
-                        <h5 className="modal-title">{mode === 'edit' ? 'Modify Book' : 'New Entry'}</h5>
+                        <h5 className="modal-title">{mode === 'edit' ? 'Edit Book' : 'Add Book'}</h5>
                         <button type="button" className="btn-close" onClick={onClose}></button>
                     </div>
                     <form onSubmit={handleSubmit}>
