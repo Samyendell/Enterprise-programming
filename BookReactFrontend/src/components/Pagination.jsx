@@ -1,8 +1,15 @@
-/** Pagination controls */
+/** Pagination controls — shows a window of up to 5 page numbers */
 export default function Pagination({ currentPage, totalPages, totalBooks, onPageChange }) {
   if (totalPages <= 1) return null;
+
+  // Calculate window of pages to show (max 5)
+  const WINDOW = 5;
+  let start = Math.max(1, currentPage - Math.floor(WINDOW / 2));
+  let end = Math.min(totalPages, start + WINDOW - 1);
+  if (end - start < WINDOW - 1) start = Math.max(1, end - WINDOW + 1);
   const pages = [];
-  for (let i = 1; i <= totalPages; i++) pages.push(i);
+  for (let i = start; i <= end; i++) pages.push(i);
+
   return (
     <div className="card-footer bg-white d-flex justify-content-between align-items-center py-2">
       <small className="text-muted">
@@ -15,6 +22,14 @@ export default function Pagination({ currentPage, totalPages, totalBooks, onPage
               Previous
             </a>
           </li>
+          {start > 1 && (
+            <>
+              <li className="page-item">
+                <a className="page-link" href="#" onClick={(e) => { e.preventDefault(); onPageChange(1); }}>1</a>
+              </li>
+              {start > 2 && <li className="page-item disabled"><span className="page-link">…</span></li>}
+            </>
+          )}
           {pages.map((p) => (
             <li key={p} className={`page-item ${p === currentPage ? 'active' : ''}`}>
               <a className="page-link" href="#" onClick={(e) => { e.preventDefault(); onPageChange(p); }}>
@@ -22,6 +37,14 @@ export default function Pagination({ currentPage, totalPages, totalBooks, onPage
               </a>
             </li>
           ))}
+          {end < totalPages && (
+            <>
+              {end < totalPages - 1 && <li className="page-item disabled"><span className="page-link">…</span></li>}
+              <li className="page-item">
+                <a className="page-link" href="#" onClick={(e) => { e.preventDefault(); onPageChange(totalPages); }}>{totalPages}</a>
+              </li>
+            </>
+          )}
           <li className={`page-item ${currentPage >= totalPages ? 'disabled' : ''}`}>
             <a className="page-link" href="#" onClick={(e) => { e.preventDefault(); onPageChange(currentPage + 1); }}>
               Next

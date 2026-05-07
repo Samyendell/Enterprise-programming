@@ -10,7 +10,8 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         .navbar-custom { background: var(--accent); }
         .page-header { border-bottom: 3px solid var(--accent); padding-bottom: .5rem; margin-bottom: 1.5rem; }
-        .synopsis-cell { max-width: 180px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .synopsis-cell, .chars-cell { max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .table { table-layout: fixed; width: 100%; }
         .genre-tag { background: var(--accent-light); color: var(--accent); border: 1px solid #b0c7e4;
                      border-radius: 3px; padding: 2px 8px; font-size: .8rem; display: inline-block; }
         .tbl-header th { background: #f1f5f9; color: #334155; border-bottom: 2px solid #cbd5e1;
@@ -265,7 +266,7 @@ function BookRow({ book, onEdit, onDelete }) {
             <td>{book.author}</td>
             <td>{book.date}</td>
             <td><span className="genre-tag">{book.genres}</span></td>
-            <td className="text-muted small">{book.characters}</td>
+            <td className="chars-cell text-muted small" title={book.characters || ''}>{book.characters}</td>
             <td className="synopsis-cell text-muted small" title={book.synopsis || ''}>
                 {book.synopsis}
             </td>
@@ -291,11 +292,15 @@ function SortHeader({ label, field, sortField, sortOrder, onSort }) {
     );
 }
 
-/** Pagination controls */
+/** Pagination controls — shows a window of up to 5 page numbers */
 function Pagination({ currentPage, totalPages, totalBooks, pageSize, onPageChange }) {
     if (totalPages <= 1) return null;
+    const WINDOW = 5;
+    let start = Math.max(1, currentPage - Math.floor(WINDOW / 2));
+    let end = Math.min(totalPages, start + WINDOW - 1);
+    if (end - start < WINDOW - 1) start = Math.max(1, end - WINDOW + 1);
     const pages = [];
-    for (let i = 1; i <= totalPages; i++) pages.push(i);
+    for (let i = start; i <= end; i++) pages.push(i);
     return (
         <div className="card-footer bg-white d-flex justify-content-between align-items-center py-2">
             <small className="text-muted">
@@ -307,12 +312,16 @@ function Pagination({ currentPage, totalPages, totalBooks, pageSize, onPageChang
                         <a className="page-link" href="#"
                            onClick={e => { e.preventDefault(); onPageChange(currentPage - 1); }}>Previous</a>
                     </li>
+                    {start > 1 && <li className="page-item"><a className="page-link" href="#" onClick={e => { e.preventDefault(); onPageChange(1); }}>1</a></li>}
+                    {start > 2 && <li className="page-item disabled"><span className="page-link">…</span></li>}
                     {pages.map(p => (
                         <li key={p} className={`page-item ${p === currentPage ? 'active' : ''}`}>
                             <a className="page-link" href="#"
                                onClick={e => { e.preventDefault(); onPageChange(p); }}>{p}</a>
                         </li>
                     ))}
+                    {end < totalPages - 1 && <li className="page-item disabled"><span className="page-link">…</span></li>}
+                    {end < totalPages && <li className="page-item"><a className="page-link" href="#" onClick={e => { e.preventDefault(); onPageChange(totalPages); }}>{totalPages}</a></li>}
                     <li className={`page-item ${currentPage >= totalPages ? 'disabled' : ''}`}>
                         <a className="page-link" href="#"
                            onClick={e => { e.preventDefault(); onPageChange(currentPage + 1); }}>Next</a>

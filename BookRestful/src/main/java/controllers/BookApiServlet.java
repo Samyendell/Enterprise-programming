@@ -40,6 +40,7 @@ public class BookApiServlet extends HttpServlet {
     }
 
     private void addCors(HttpServletResponse resp) {
+        resp.setCharacterEncoding("UTF-8");
         resp.setHeader("Access-Control-Allow-Origin", "*");
         resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         resp.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept");
@@ -51,7 +52,7 @@ public class BookApiServlet extends HttpServlet {
     // ?sort=title|author|date|genres&order=asc|desc for sorting,
     // ?page=1&size=5 for pagination
 
-    private static final int DEFAULT_PAGE_SIZE = 5;
+    private static final int DEFAULT_PAGE_SIZE = 10;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)

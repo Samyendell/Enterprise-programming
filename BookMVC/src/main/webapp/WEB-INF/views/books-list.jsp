@@ -127,11 +127,21 @@
                                             <c:out value="${b.genres}"/>
                                         </span>
                                     </td>
-                                    <td class="text-muted small">
-                                        <c:out value="${b.characters}"/>
+                                    <td class="text-muted small synopsis-cell" title="${fn:escapeXml(b.characters)}">
+                                        <c:choose>
+                                            <c:when test="${fn:length(b.characters) > 60}">
+                                                ${fn:substring(b.characters, 0, 60)}&hellip;
+                                            </c:when>
+                                            <c:otherwise><c:out value="${b.characters}"/></c:otherwise>
+                                        </c:choose>
                                     </td>
-                                    <td class="synopsis-cell text-muted small">
-                                        <c:out value="${b.synopsis}"/>
+                                    <td class="synopsis-cell text-muted small" title="${fn:escapeXml(b.synopsis)}">
+                                        <c:choose>
+                                            <c:when test="${fn:length(b.synopsis) > 60}">
+                                                ${fn:substring(b.synopsis, 0, 60)}&hellip;
+                                            </c:when>
+                                            <c:otherwise><c:out value="${b.synopsis}"/></c:otherwise>
+                                        </c:choose>
                                     </td>
                                     <td class="text-center text-nowrap">
                                         <button type="button" class="btn btn-sm btn-del"
@@ -160,12 +170,33 @@
                         <a class="page-link"
                            href="${pageContext.request.contextPath}/books?page=${currentPage - 1}&sort=${sortField}&order=${sortOrder}&size=${pageSize}">Previous</a>
                     </li>
-                    <c:forEach begin="1" end="${totalPages}" var="p">
+                    <c:set var="winStart" value="${currentPage - 2 < 1 ? 1 : currentPage - 2}" />
+                    <c:set var="winEnd" value="${winStart + 4 > totalPages ? totalPages : winStart + 4}" />
+                    <c:if test="${winEnd - winStart < 4}">
+                        <c:set var="winStart" value="${winEnd - 4 < 1 ? 1 : winEnd - 4}" />
+                    </c:if>
+                    <c:if test="${winStart > 1}">
+                        <li class="page-item">
+                            <a class="page-link" href="${pageContext.request.contextPath}/books?page=1&sort=${sortField}&order=${sortOrder}&size=${pageSize}">1</a>
+                        </li>
+                        <c:if test="${winStart > 2}">
+                            <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+                        </c:if>
+                    </c:if>
+                    <c:forEach begin="${winStart}" end="${winEnd}" var="p">
                         <li class="page-item ${p == currentPage ? 'active' : ''}">
                             <a class="page-link"
                                href="${pageContext.request.contextPath}/books?page=${p}&sort=${sortField}&order=${sortOrder}&size=${pageSize}">${p}</a>
                         </li>
                     </c:forEach>
+                    <c:if test="${winEnd < totalPages}">
+                        <c:if test="${winEnd < totalPages - 1}">
+                            <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
+                        </c:if>
+                        <li class="page-item">
+                            <a class="page-link" href="${pageContext.request.contextPath}/books?page=${totalPages}&sort=${sortField}&order=${sortOrder}&size=${pageSize}">${totalPages}</a>
+                        </li>
+                    </c:if>
                     <li class="page-item ${currentPage >= totalPages ? 'disabled' : ''}">
                         <a class="page-link"
                            href="${pageContext.request.contextPath}/books?page=${currentPage + 1}&sort=${sortField}&order=${sortOrder}&size=${pageSize}">Next</a>

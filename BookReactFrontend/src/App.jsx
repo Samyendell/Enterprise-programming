@@ -23,7 +23,7 @@ import './App.css';
  *   - Client-side validation mirrors server-side Validation.validateBook()
  */
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 10;
 
 export default function App() {
   const [books, setBooks] = useState([]);

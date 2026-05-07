@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const MAX_LEN = 40;
+const MAX_LEN = 60;
 
 /** Truncate text that exceeds MAX_LEN characters */
 function truncate(text) {
@@ -35,7 +35,7 @@ export default function BookRow({ book, onEdit, onDelete, onView }) {
   return (
     <tr className="clickable-row" onClick={() => onView(book)} style={{ cursor: 'pointer' }}>
       <td>{book.id}</td>
-      <td><strong>{truncate(book.title)}</strong></td>
+      <td><strong>{book.title}</strong></td>
       <td>{truncate(book.author)}</td>
       <td>{book.date}</td>
       <td><span className="genre-tag">{truncate(book.genres)}</span></td>
