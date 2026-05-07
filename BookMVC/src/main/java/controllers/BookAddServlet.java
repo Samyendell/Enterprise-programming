@@ -1,16 +1,17 @@
 package controllers;
 
-import db.BookDAO;
-import models.Book;
-import util.Validation;
+import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.List;
+
+import db.BookDAO;
+import models.Book;
+import util.Validation;
 
 // NOTE: handles adding new books
 // GET shows the empty form, POST processes the submission

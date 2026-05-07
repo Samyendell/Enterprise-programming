@@ -49,8 +49,8 @@ public class BookDAO {
     }
 
     // NOTE: update these three values to match your Mudfoot credentials
-    private final String user     = "YOUR_MUDFOOT_USERNAME";
-    private final String password = "YOUR_MUDFOOT_PASSWORD";
+    private final String user     = "yendells";
+    private final String password = "CemVegDov1";
     private final String url      = "jdbc:mysql://mudfoot.doc.stu.mmu.ac.uk:6306/" + user;
 
     // NOTE: opens a fresh connection - called at the start of each method
