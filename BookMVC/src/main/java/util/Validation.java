@@ -10,15 +10,13 @@ import java.util.List;
 // JSP form also has client-side validation but this catches anything that gets past it
 public class Validation {
 
-	// NOTE: used for checking the publication date isn't in the future
-	private static final int CURRENT_YEAR = java.time.Year.now().getValue();
-
 	// NOTE: only allows letters, spaces, hyphens, apostrophes, and dots in author
 	// names
 	private static final String AUTHOR_PATTERN = "^[a-zA-Z .'-]+$";
 
-	// NOTE: matches 4-digit years like 1984 or 2003
-	private static final String YEAR_PATTERN = "^\\d{4}$";
+	// NOTE: date may only contain digits, hyphens, and forward slashes (e.g. 2003,
+	// 01/03/2003, 2003-01-03)
+	private static final String DATE_PATTERN = "^[0-9/\\-]+$";
 
 	// NOTE: strips any HTML tags from input to prevent stored XSS
 	private static String stripHtml(String s) {
@@ -68,18 +66,11 @@ public class Validation {
 			errors.add("The Book's author must only contain letters, spaces, hyphens, and apostrophes.");
 		}
 
-		// NOTE: date validation - required, must be a 4-digit year, not in the future
+		// NOTE: date validation - required, only digits/hyphens/slashes allowed
 		if (isBlank(date)) {
 			errors.add("The Book's publication date is missing.");
-		} else if (!date.trim().matches(YEAR_PATTERN)) {
-			errors.add("The Book's date must be a valid 4-digit year (e.g. 2003).");
-		} else {
-			int year = Integer.parseInt(date.trim());
-			if (year > CURRENT_YEAR) {
-				errors.add("The Book's date cannot be in the future.");
-			} else if (year < 1000) {
-				errors.add("The Book's date must be a realistic year (1000 or later).");
-			}
+		} else if (!date.trim().matches(DATE_PATTERN)) {
+			errors.add("The Book's date may only contain numbers, hyphens, and forward slashes.");
 		}
 
 		// NOTE: genres validation - optional, max 200

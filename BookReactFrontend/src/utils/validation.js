@@ -9,16 +9,15 @@
  * Rules checked:
  *   - Title: required, max 150 characters
  *   - Author: required, max 150 characters, letters/spaces/hyphens/apostrophes only
- *   - Date: required, 4-digit year, not in the future, >= 1000
+ *   - Date: required, only digits/hyphens/slashes allowed
  *   - Genres: optional, max 200 characters
  *   - Characters: optional, no limit
  *   - Synopsis: optional, max 8000 characters
  *   - All fields: HTML tags are stripped before checking (XSS prevention)
  */
 
-const CURRENT_YEAR = new Date().getFullYear();
 const AUTHOR_REGEX = /^[a-zA-Z .'\-]+$/;
-const YEAR_REGEX = /^\d{4}$/;
+const DATE_REGEX = /^[0-9/\-]+$/;
 
 function stripHtml(s) {
     return s ? s.replace(/<[^>]*>/g, '').trim() : '';
@@ -42,12 +41,7 @@ export function validateBook(b) {
         errs.push('Author must only contain letters, spaces, hyphens, and apostrophes.');
 
     if (!date || !date.trim()) errs.push('Date is required.');
-    else if (!YEAR_REGEX.test(date.trim())) errs.push('Date must be a valid 4-digit year (e.g. 2003).');
-    else {
-        const y = parseInt(date.trim());
-        if (y > CURRENT_YEAR) errs.push('Date cannot be in the future.');
-        else if (y < 1000) errs.push('Date must be a realistic year (1000 or later).');
-    }
+    else if (!DATE_REGEX.test(date.trim())) errs.push('Date may only contain numbers, hyphens, and forward slashes.');
 
     if (genres && genres.length > 200) errs.push('Genres must not exceed 200 characters.');
 

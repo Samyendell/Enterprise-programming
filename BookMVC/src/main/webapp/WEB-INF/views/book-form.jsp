@@ -162,21 +162,15 @@ document.getElementById('bookForm').addEventListener('submit', function(e) {
         }
     });
 
-    // NOTE: validate the date field — must be a 4-digit year, not in the future
+    // NOTE: validate the date field — only digits, hyphens, slashes allowed
     var dateEl = document.getElementById('date');
     var dateVal = dateEl.value.trim();
-    var yearRegex = /^\d{4}$/;
-    if (!dateVal || !yearRegex.test(dateVal)) {
+    var dateRegex = /^[0-9/\-]+$/;
+    if (!dateVal || !dateRegex.test(dateVal)) {
         dateEl.classList.add('is-invalid');
         valid = false;
     } else {
-        var year = parseInt(dateVal);
-        if (year > new Date().getFullYear() || year < 1000) {
-            dateEl.classList.add('is-invalid');
-            valid = false;
-        } else {
-            dateEl.classList.remove('is-invalid');
-        }
+        dateEl.classList.remove('is-invalid');
     }
 
     if (!valid) e.preventDefault();
