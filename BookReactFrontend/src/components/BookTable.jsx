@@ -4,7 +4,7 @@ import Pagination from './Pagination';
 
 /** Books table with sortable headers, loading/error states, and pagination */
 export default function BookTable({
-  books, loading, error, format, onEdit, onDelete,
+  books, loading, error, format, onEdit, onDelete, onView,
   sortField, sortOrder, onSort,
   currentPage, totalPages, totalBooks, onPageChange,
 }) {
@@ -38,7 +38,7 @@ export default function BookTable({
             ) : books.length === 0 ? (
               <tr><td colSpan={8} className="text-center text-muted py-4">No books found.</td></tr>
             ) : (
-              books.map((b) => <BookRow key={b.id} book={b} onEdit={onEdit} onDelete={onDelete} />)
+              books.map((b) => <BookRow key={b.id} book={b} onEdit={onEdit} onDelete={onDelete} onView={onView} />)
             )}
           </tbody>
         </table>

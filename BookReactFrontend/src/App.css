@@ -28,3 +28,4 @@ pre.raw-viewer { font-size: .75rem; max-height: 500px; overflow-y: auto;
 .btn-del:hover { background: #fef2f2; }
 .modal-header { background: var(--accent); color: white; }
 .modal-header .btn-close { filter: brightness(0) invert(1); }
+.clickable-row:hover { background: var(--accent-light); }

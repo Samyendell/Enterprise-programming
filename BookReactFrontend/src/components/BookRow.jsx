@@ -1,7 +1,15 @@
 import { useState } from 'react';
 
-/** Single row in the book table — handles inline delete confirmation */
-export default function BookRow({ book, onEdit, onDelete }) {
+const MAX_LEN = 40;
+
+/** Truncate text that exceeds MAX_LEN characters */
+function truncate(text) {
+  if (!text || text.length <= MAX_LEN) return text || '';
+  return text.substring(0, MAX_LEN) + '…';
+}
+
+/** Single row in the book table — clickable to view details, with inline delete confirmation */
+export default function BookRow({ book, onEdit, onDelete, onView }) {
   const [confirming, setConfirming] = useState(false);
 
   if (confirming) {
@@ -25,17 +33,15 @@ export default function BookRow({ book, onEdit, onDelete }) {
   }
 
   return (
-    <tr>
+    <tr className="clickable-row" onClick={() => onView(book)} style={{ cursor: 'pointer' }}>
       <td>{book.id}</td>
-      <td><strong>{book.title}</strong></td>
-      <td>{book.author}</td>
+      <td><strong>{truncate(book.title)}</strong></td>
+      <td>{truncate(book.author)}</td>
       <td>{book.date}</td>
-      <td><span className="genre-tag">{book.genres}</span></td>
-      <td className="text-muted small">{book.characters}</td>
-      <td className="synopsis-cell text-muted small" title={book.synopsis || ''}>
-        {book.synopsis}
-      </td>
-      <td className="text-center text-nowrap">
+      <td><span className="genre-tag">{truncate(book.genres)}</span></td>
+      <td className="text-muted small">{truncate(book.characters)}</td>
+      <td className="synopsis-cell text-muted small">{truncate(book.synopsis)}</td>
+      <td className="text-center text-nowrap" onClick={(e) => e.stopPropagation()}>
         <button className="btn btn-sm btn-del me-1" onClick={() => setConfirming(true)}>Remove</button>
         <button className="btn btn-sm btn-edit" onClick={() => onEdit(book.id)}>Modify</button>
       </td>

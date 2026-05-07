@@ -4,6 +4,7 @@ import SearchBar from './components/SearchBar';
 import BookTable from './components/BookTable';
 import RawViewer from './components/RawViewer';
 import BookFormModal from './components/BookFormModal';
+import BookDetailModal from './components/BookDetailModal';
 import { bookService } from './services/bookService';
 import { validateBook } from './utils/validation';
 import './App.css';
@@ -46,6 +47,9 @@ export default function App() {
   const [modalInit, setModalInit] = useState(null);
   const [modalErrors, setModalErrors] = useState([]);
   const [editId, setEditId] = useState(null);
+
+  const [detailBook, setDetailBook] = useState(null);
+  const [detailShow, setDetailShow] = useState(false);
 
   const loadBooks = useCallback(async (page, sort, order, search) => {
     setLoading(true);
@@ -168,6 +172,7 @@ export default function App() {
             <BookTable
               books={books} loading={loading} error={tableErr}
               format={format} onEdit={openEdit} onDelete={handleDelete}
+              onView={(book) => { setDetailBook(book); setDetailShow(true); }}
               sortField={sortField} sortOrder={sortOrder} onSort={handleSort}
               currentPage={currentPage} totalPages={totalPages}
               totalBooks={totalBooks} onPageChange={handlePageChange}
@@ -182,6 +187,11 @@ export default function App() {
         show={modalShow} mode={modalMode} initial={modalInit}
         errors={modalErrors} onSave={handleSave}
         onClose={() => setModalShow(false)}
+      />
+      <BookDetailModal
+        book={detailBook} show={detailShow}
+        onClose={() => setDetailShow(false)}
+        onEdit={openEdit} onDelete={handleDelete}
       />
     </div>
   );
