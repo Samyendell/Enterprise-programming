@@ -52,20 +52,16 @@ public class Validation {
 		book.setCharacters(characters);
 		book.setSynopsis(synopsis);
 
-		// NOTE: title validation - required, min 5, max 150
+		// NOTE: title validation - required, max 150
 		if (isBlank(title)) {
 			errors.add("The Book's title is missing.");
-		} else if (title.trim().length() < 5) {
-			errors.add("The Book's title must be at least 5 characters.");
 		} else if (title.trim().length() > 150) {
 			errors.add("The Book's title must not exceed 150 characters.");
 		}
 
-		// NOTE: author validation - required, min 5, max 150, letters only
+		// NOTE: author validation - required, max 150, letters only
 		if (isBlank(author)) {
 			errors.add("The Book's author is missing.");
-		} else if (author.trim().length() < 5) {
-			errors.add("The Book's author must be at least 5 characters.");
 		} else if (author.trim().length() > 150) {
 			errors.add("The Book's author must not exceed 150 characters.");
 		} else if (!author.trim().matches(AUTHOR_PATTERN)) {
@@ -86,31 +82,16 @@ public class Validation {
 			}
 		}
 
-		// NOTE: genres validation - required, min 3, max 50
-		if (isBlank(genres)) {
-			errors.add("The Book's genre is missing.");
-		} else if (genres.trim().length() < 3) {
-			errors.add("The Book's genre must be at least 3 characters.");
-		} else if (genres.trim().length() > 50) {
-			errors.add("The Book's genre must not exceed 50 characters.");
+		// NOTE: genres validation - optional, max 200
+		if (!isBlank(genres) && genres.trim().length() > 200) {
+			errors.add("The Book's genre must not exceed 200 characters.");
 		}
 
-		// NOTE: characters validation - required, min 5, max 200
-		if (isBlank(characters)) {
-			errors.add("The Book's characters field is missing.");
-		} else if (characters.trim().length() < 5) {
-			errors.add("The Book's characters must be at least 5 characters.");
-		} else if (characters.trim().length() > 200) {
-			errors.add("The Book's characters must not exceed 200 characters.");
-		}
+		// NOTE: characters validation - optional, no length limit
 
-		// NOTE: synopsis validation - required, min 5, max 1000
-		if (isBlank(synopsis)) {
-			errors.add("The Book's synopsis is missing.");
-		} else if (synopsis.trim().length() < 5) {
-			errors.add("The Book's synopsis must be at least 5 characters.");
-		} else if (synopsis.trim().length() > 1000) {
-			errors.add("The Book's synopsis must not exceed 1000 characters.");
+		// NOTE: synopsis validation - optional, max 8000
+		if (!isBlank(synopsis) && synopsis.trim().length() > 8000) {
+			errors.add("The Book's synopsis must not exceed 8000 characters.");
 		}
 
 		return errors;

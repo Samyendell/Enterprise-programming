@@ -58,7 +58,7 @@
                 <input type="text" id="title" name="title"
                        class="form-control" maxlength="150" required
                        value="<c:out value='${book.title}'/>">
-                <div class="invalid-feedback">Title is required (5 to 150 characters).</div>
+                <div class="invalid-feedback">Title is required (max 150 characters).</div>
             </div>
 
             <div class="col-md-6">
@@ -68,7 +68,7 @@
                 <input type="text" id="author" name="author"
                        class="form-control" maxlength="150" required
                        value="<c:out value='${book.author}'/>">
-                <div class="invalid-feedback">Author is required (5 to 150 characters).</div>
+                <div class="invalid-feedback">Author is required (max 150 characters).</div>
             </div>
 
             <div class="col-md-4">
@@ -77,39 +77,40 @@
                 </label>
                 <input type="text" id="date" name="date"
                        class="form-control" maxlength="20"
-                       placeholder="e.g. 2003"
+                       placeholder="e.g. 2003" required
                        value="<c:out value='${book.date}'/>">
+                <div class="invalid-feedback">Date must be a valid 4-digit year (not in the future).</div>
             </div>
 
             <div class="col-md-8">
                 <label for="genres" class="form-label">
-                    Genres <span class="text-danger">*</span>
+                    Genres
                 </label>
                 <input type="text" id="genres" name="genres"
-                       class="form-control" maxlength="50" required
+                       class="form-control" maxlength="200"
                        value="<c:out value='${book.genres}'/>">
-                <div class="invalid-feedback">Genres is required (3 to 50 characters).</div>
+                <div class="invalid-feedback">Genres must not exceed 200 characters.</div>
             </div>
 
             <div class="col-12">
                 <label for="characters" class="form-label">
-                    Characters <span class="text-danger">*</span>
+                    Characters
                 </label>
                 <input type="text" id="characters" name="characters"
-                       class="form-control" maxlength="200"
+                       class="form-control"
                        placeholder="Comma-separated character names"
                        value="<c:out value='${book.characters}'/>">
-                <div class="invalid-feedback">Characters is required (5 to 200 characters).</div>
+                
             </div>
 
             <div class="col-12">
                 <label for="synopsis" class="form-label">
-                    Synopsis <span class="text-danger">*</span>
+                    Synopsis
                 </label>
                 <textarea id="synopsis" name="synopsis"
                           class="form-control" rows="4"
-                          maxlength="1000"><c:out value="${book.synopsis}"/></textarea>
-                <div class="invalid-feedback">Synopsis is required (5 to 1000 characters).</div>
+                          maxlength="8000"><c:out value="${book.synopsis}"/></textarea>
+                <div class="invalid-feedback">Synopsis must not exceed 8000 characters.</div>
             </div>
         </div>
 
@@ -125,25 +126,59 @@
 </div>
 
 <script>
+// NOTE: client-side validation that mirrors server-side Validation.java
+// gives the user instant feedback before the form is submitted to the server
 document.getElementById('bookForm').addEventListener('submit', function(e) {
     var valid = true;
-    var fields = [
-        { id: 'title',      min: 5,  max: 150 },
-        { id: 'author',     min: 5,  max: 150 },
-        { id: 'genres',     min: 3,  max: 50  },
-        { id: 'characters', min: 5,  max: 200 },
-        { id: 'synopsis',   min: 5,  max: 1000 }
+    // NOTE: check length constraints for each text field
+    // NOTE: required fields with max length only
+    var requiredFields = [
+        { id: 'title',  max: 150 },
+        { id: 'author', max: 150 }
     ];
-    fields.forEach(function(f) {
+    requiredFields.forEach(function(f) {
         var el  = document.getElementById(f.id);
         var val = el.value.trim();
-        if (val.length < f.min || val.length > f.max) {
+        if (!val || val.length > f.max) {
             el.classList.add('is-invalid');
             valid = false;
         } else {
             el.classList.remove('is-invalid');
         }
     });
+    // NOTE: optional fields with max length
+    var optionalFields = [
+        { id: 'genres',   max: 200 },
+        { id: 'synopsis', max: 8000 }
+    ];
+    optionalFields.forEach(function(f) {
+        var el  = document.getElementById(f.id);
+        var val = el.value.trim();
+        if (val.length > f.max) {
+            el.classList.add('is-invalid');
+            valid = false;
+        } else {
+            el.classList.remove('is-invalid');
+        }
+    });
+
+    // NOTE: validate the date field — must be a 4-digit year, not in the future
+    var dateEl = document.getElementById('date');
+    var dateVal = dateEl.value.trim();
+    var yearRegex = /^\d{4}$/;
+    if (!dateVal || !yearRegex.test(dateVal)) {
+        dateEl.classList.add('is-invalid');
+        valid = false;
+    } else {
+        var year = parseInt(dateVal);
+        if (year > new Date().getFullYear() || year < 1000) {
+            dateEl.classList.add('is-invalid');
+            valid = false;
+        } else {
+            dateEl.classList.remove('is-invalid');
+        }
+    }
+
     if (!valid) e.preventDefault();
 });
 </script>

@@ -2,7 +2,22 @@ import SortHeader from './SortHeader';
 import BookRow from './BookRow';
 import Pagination from './Pagination';
 
-/** Books table with sortable headers, loading/error states, and pagination */
+/**
+ * BookTable — the main data table displaying all books.
+ *
+ * NOTE: this is a presentational component — it receives all data
+ * and callbacks as props and doesn't manage any state itself.
+ * It composes SortHeader (for clickable column headers), BookRow
+ * (for each book record), and Pagination (for page navigation).
+ * The format pill badge shows which data format is currently active.
+ *
+ * Props:
+ *   books, loading, error  - data state from the parent
+ *   format                 - current format for the format pill
+ *   onEdit, onDelete, onView - callbacks forwarded to each BookRow
+ *   sortField, sortOrder, onSort - sorting state and handler
+ *   currentPage, totalPages, totalBooks, onPageChange - pagination
+ */
 export default function BookTable({
   books, loading, error, format, onEdit, onDelete, onView,
   sortField, sortOrder, onSort,

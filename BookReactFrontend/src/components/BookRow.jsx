@@ -1,14 +1,30 @@
 import { useState } from 'react';
 
+// NOTE: maximum characters to display in a table cell before truncating
+// prevents very long text from breaking the table layout
 const MAX_LEN = 60;
 
-/** Truncate text that exceeds MAX_LEN characters */
+/** Truncate text that exceeds MAX_LEN characters, appending "…" */
 function truncate(text) {
   if (!text || text.length <= MAX_LEN) return text || '';
-  return text.substring(0, MAX_LEN) + '…';
+  return text.substring(0, MAX_LEN) + '\u2026';
 }
 
-/** Single row in the book table — clickable to view details, with inline delete confirmation */
+/**
+ * BookRow — a single row in the book table.
+ *
+ * NOTE: the entire row is clickable to open the detail modal where
+ * the user can see all fields in full (no truncation). The action
+ * buttons (Remove/Modify) use stopPropagation so they don't trigger
+ * the row click. Delete uses an inline confirmation pattern — the
+ * row content is temporarily replaced with a confirm/cancel prompt.
+ *
+ * Props:
+ *   book     - the book object to display
+ *   onEdit   - callback(id) to open the edit modal
+ *   onDelete - callback(id) to delete the book
+ *   onView   - callback(book) to open the detail modal
+ */
 export default function BookRow({ book, onEdit, onDelete, onView }) {
   const [confirming, setConfirming] = useState(false);
 

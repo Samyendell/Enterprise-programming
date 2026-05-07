@@ -1,8 +1,19 @@
 import { useState } from 'react';
 
-/** Search input with enter-key support */
+/**
+ * SearchBar — text input for searching books by title, author or genre.
+ *
+ * NOTE: uses controlled input with local state for the query string.
+ * Supports both button click and Enter key to trigger the search.
+ * The "Reset" button clears the input and reloads all books.
+ *
+ * Props:
+ *   onSearch - callback with the search query string
+ *   onClear  - callback to reset search and reload all books
+ */
 export default function SearchBar({ onSearch, onClear }) {
   const [q, setQ] = useState('');
+  // NOTE: allow searching by pressing Enter without clicking the button
   const handleKey = (e) => { if (e.key === 'Enter') onSearch(q); };
   return (
     <div className="input-group mb-3">

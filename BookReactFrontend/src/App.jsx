@@ -26,31 +26,42 @@ import './App.css';
 const PAGE_SIZE = 10;
 
 export default function App() {
+  // NOTE: core data state — books array and the currently selected response format
   const [books, setBooks] = useState([]);
   const [format, setFormat] = useState('json');
   const [loading, setLoading] = useState(true);
   const [tableErr, setTableErr] = useState('');
+
+  // NOTE: raw API response displayed in the RawViewer panel
   const [rawMethod, setRawMethod] = useState('');
   const [rawText, setRawText] = useState('');
 
+  // NOTE: sorting state — which column and direction
   const [sortField, setSortField] = useState('title');
   const [sortOrder, setSortOrder] = useState('asc');
 
+  // NOTE: pagination state — read from server response headers
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalBooks, setTotalBooks] = useState(0);
 
+  // NOTE: search query persisted so it survives page/sort changes
   const [searchQuery, setSearchQuery] = useState('');
 
+  // NOTE: modal state for add/edit form
   const [modalShow, setModalShow] = useState(false);
   const [modalMode, setModalMode] = useState('add');
   const [modalInit, setModalInit] = useState(null);
   const [modalErrors, setModalErrors] = useState([]);
   const [editId, setEditId] = useState(null);
 
+  // NOTE: detail modal state — opens when user clicks a table row
   const [detailBook, setDetailBook] = useState(null);
   const [detailShow, setDetailShow] = useState(false);
 
+  // NOTE: fetches a page of books from the API with current sort/search/format.
+  // useCallback ensures this function is recreated when the format changes,
+  // so the effect below re-fetches whenever the user switches format.
   const loadBooks = useCallback(async (page, sort, order, search) => {
     setLoading(true);
     setTableErr('');
@@ -68,14 +79,17 @@ export default function App() {
     setLoading(false);
   }, [format]);
 
+  // NOTE: re-fetch books whenever the format changes (JSON/XML/Text)
   useEffect(() => { loadBooks(currentPage, sortField, sortOrder, searchQuery); }, [format]);
 
+  // NOTE: resets search and goes back to page 1 showing all books
   const loadAll = () => {
     setSearchQuery('');
     setCurrentPage(1);
     loadBooks(1, sortField, sortOrder, '');
   };
 
+  // NOTE: called by SortHeader when user clicks a column to sort
   const handleSort = (field, order) => {
     setSortField(field);
     setSortOrder(order);
@@ -83,11 +97,13 @@ export default function App() {
     loadBooks(1, field, order, searchQuery);
   };
 
+  // NOTE: called by Pagination when user clicks a page number
   const handlePageChange = (page) => {
     setCurrentPage(page);
     loadBooks(page, sortField, sortOrder, searchQuery);
   };
 
+  // NOTE: triggers a search query — resets to page 1
   const handleSearch = (q) => {
     if (!q.trim()) { loadAll(); return; }
     setSearchQuery(q);
@@ -95,6 +111,7 @@ export default function App() {
     loadBooks(1, sortField, sortOrder, q);
   };
 
+  // NOTE: opens the add-book modal with empty form fields
   const openAdd = () => {
     setModalMode('add');
     setEditId(null);
@@ -103,6 +120,8 @@ export default function App() {
     setModalShow(true);
   };
 
+  // NOTE: fetches the book by ID from the API, then opens the edit modal
+  // with the book's current values pre-filled in the form
   const openEdit = async (id) => {
     try {
       const result = await bookService.getBook(id, format);
@@ -123,6 +142,8 @@ export default function App() {
     }
   };
 
+  // NOTE: validates form data client-side, then sends POST (add) or PUT (edit)
+  // to the API in the currently selected format (JSON, XML, or Text)
   const handleSave = async (formData) => {
     const book = {
       id: editId || 0,
@@ -151,6 +172,8 @@ export default function App() {
     }
   };
 
+  // NOTE: sends DELETE request — no confirmation here because BookRow
+  // handles inline confirmation before calling this
   const handleDelete = async (id) => {
     try {
       const result = await bookService.deleteBook(id, format);

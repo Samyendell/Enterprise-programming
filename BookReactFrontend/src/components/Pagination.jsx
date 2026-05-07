@@ -1,4 +1,17 @@
-/** Pagination controls — shows a window of up to 5 page numbers */
+/**
+ * Pagination — page navigation controls with a sliding window.
+ *
+ * NOTE: instead of showing all page numbers (which could be hundreds),
+ * this shows a window of up to 5 pages centred on the current page,
+ * with "…" ellipsis and direct links to the first and last pages.
+ * This keeps the UI clean even with large datasets.
+ *
+ * Props:
+ *   currentPage - the page currently being viewed
+ *   totalPages  - total number of pages available
+ *   totalBooks  - total number of books (for the info text)
+ *   onPageChange - callback(pageNumber) when a page is clicked
+ */
 export default function Pagination({ currentPage, totalPages, totalBooks, onPageChange }) {
   if (totalPages <= 1) return null;
 

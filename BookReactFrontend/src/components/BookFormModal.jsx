@@ -1,7 +1,23 @@
 import { useState, useEffect, useRef } from 'react';
 import { Modal } from 'bootstrap';
 
-/** Add / Edit modal form */
+/**
+ * BookFormModal — modal dialog for adding or editing a book.
+ *
+ * NOTE: this is a controlled component — the parent decides when to
+ * show/hide it via the `show` prop, and provides initial form values
+ * via `initial`. Validation errors from the parent (either client-side
+ * or server-side) are displayed in an alert at the top of the form.
+ * Uses Bootstrap's Modal JS for the fade/backdrop animation.
+ *
+ * Props:
+ *   show    - boolean controlling modal visibility
+ *   mode    - 'add' or 'edit'
+ *   initial - initial form field values
+ *   errors  - array of validation error messages to display
+ *   onSave  - callback(formData) when the user submits
+ *   onClose - callback to close the modal
+ */
 export default function BookFormModal({ show, mode, initial, errors, onSave, onClose }) {
   const [form, setForm] = useState({ title: '', author: '', date: '', genres: '', characters: '', synopsis: '' });
   const modalRef = useRef(null);

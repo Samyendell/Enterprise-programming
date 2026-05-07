@@ -1,4 +1,15 @@
-/** Raw API response viewer panel */
+/**
+ * RawViewer — displays the raw API response text alongside the HTTP method.
+ *
+ * NOTE: this component is key for demonstrating format negotiation.
+ * When the user switches format (JSON/XML/Text), the raw viewer shows
+ * exactly what the server sent back in that format, proving that the
+ * client correctly requests and parses each format.
+ *
+ * Props:
+ *   method - the HTTP method and URL string (e.g. "GET http://...")
+ *   text   - the raw response body from the server
+ */
 export default function RawViewer({ method, text }) {
   return (
     <div className="card border-0 shadow-sm">

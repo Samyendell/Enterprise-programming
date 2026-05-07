@@ -1,6 +1,19 @@
 /**
  * Client-side validation that mirrors the server-side Validation.java.
- * Checks length, format, and content rules so the user gets instant feedback.
+ *
+ * NOTE: by duplicating the validation rules on the client, the user gets
+ * instant feedback without a round-trip to the server. The same rules
+ * are enforced server-side (in Validation.java) as a safety net, so
+ * even if client-side validation is bypassed, bad data cannot be saved.
+ *
+ * Rules checked:
+ *   - Title: required, max 150 characters
+ *   - Author: required, max 150 characters, letters/spaces/hyphens/apostrophes only
+ *   - Date: required, 4-digit year, not in the future, >= 1000
+ *   - Genres: optional, max 200 characters
+ *   - Characters: optional, no limit
+ *   - Synopsis: optional, max 8000 characters
+ *   - All fields: HTML tags are stripped before checking (XSS prevention)
  */
 
 const CURRENT_YEAR = new Date().getFullYear();
@@ -20,10 +33,10 @@ export function validateBook(b) {
     const characters = stripHtml(b.characters);
     const synopsis = stripHtml(b.synopsis);
 
-    if (!title || title.length < 5) errs.push('Title must be at least 5 characters.');
+    if (!title) errs.push('Title is required.');
     else if (title.length > 150) errs.push('Title must not exceed 150 characters.');
 
-    if (!author || author.length < 5) errs.push('Author must be at least 5 characters.');
+    if (!author) errs.push('Author is required.');
     else if (author.length > 150) errs.push('Author must not exceed 150 characters.');
     else if (!AUTHOR_REGEX.test(author))
         errs.push('Author must only contain letters, spaces, hyphens, and apostrophes.');
@@ -36,14 +49,11 @@ export function validateBook(b) {
         else if (y < 1000) errs.push('Date must be a realistic year (1000 or later).');
     }
 
-    if (!genres || genres.length < 3) errs.push('Genres must be at least 3 characters.');
-    else if (genres.length > 50) errs.push('Genres must not exceed 50 characters.');
+    if (genres && genres.length > 200) errs.push('Genres must not exceed 200 characters.');
 
-    if (!characters || characters.length < 5) errs.push('Characters must be at least 5 characters.');
-    else if (characters.length > 200) errs.push('Characters must not exceed 200 characters.');
+    // Characters: optional, no length limit
 
-    if (!synopsis || synopsis.length < 5) errs.push('Synopsis must be at least 5 characters.');
-    else if (synopsis.length > 1000) errs.push('Synopsis must not exceed 1000 characters.');
+    if (synopsis && synopsis.length > 8000) errs.push('Synopsis must not exceed 8000 characters.');
 
     return errs;
 }

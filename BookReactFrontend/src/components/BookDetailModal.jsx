@@ -1,7 +1,25 @@
 import { useEffect, useRef } from 'react';
 import { Modal } from 'bootstrap';
 
-/** Read-only modal showing all fields for a single book */
+/**
+ * BookDetailModal — read-only modal showing all fields for a single book.
+ *
+ * NOTE: this modal opens when the user clicks a row in the table. It
+ * displays the full untruncated data for every field so the user can
+ * read long character lists and synopses. The footer provides quick
+ * access to Remove and Modify actions without going back to the table.
+ *
+ * The modal DOM is always rendered (not conditionally removed) so that
+ * Bootstrap's Modal JS instance can be created once on mount. Content
+ * inside the body is conditionally rendered based on the `book` prop.
+ *
+ * Props:
+ *   book     - the book object to display (or null)
+ *   show     - boolean controlling modal visibility
+ *   onClose  - callback to close the modal
+ *   onEdit   - callback(id) to open the edit modal for this book
+ *   onDelete - callback(id) to delete this book
+ */
 export default function BookDetailModal({ book, show, onClose, onEdit, onDelete }) {
   const modalRef = useRef(null);
   const bsModal = useRef(null);
@@ -59,7 +77,7 @@ export default function BookDetailModal({ book, show, onClose, onEdit, onDelete 
           <div className="modal-footer">
             <button className="btn btn-sm btn-del" onClick={() => { onClose(); if (book) onDelete(book.id); }}>Remove</button>
             <button className="btn btn-sm btn-edit" onClick={() => { onClose(); if (book) onEdit(book.id); }}>Modify</button>
-            <button className="btn btn-secondary" onClick={onClose}>Close</button>
+            <button className="btn btn-sm btn-secondary" onClick={onClose}>Close</button>
           </div>
         </div>
       </div>
