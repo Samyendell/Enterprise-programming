@@ -49,14 +49,18 @@ public class BookDAO {
     }
 
     // NOTE: update these three values to match your Mudfoot credentials
-    private final String user     = "yendells";
-    private final String password = "CemVegDov1";
-    private final String url      = "jdbc:mysql://mudfoot.doc.stu.mmu.ac.uk:6306/" + user;
+//    private final String user     = "yendells";
+//    private final String password = "CemVegDov1";
+//    private final String url      = "jdbc:mysql://mudfoot.doc.stu.mmu.ac.uk:6306/" + user;
+    
+	  private final String user     = "admin";
+	  private final String password = "eT5FreIPHHuZR8911o1J";
+	  private final String url      = "jdbc:mysql://book-db-instance.c78aemq4eziw.eu-west-2.rds.amazonaws.com:3306/book_mvc_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
 
     // NOTE: opens a fresh connection - called at the start of each method
     private Connection openConnection() throws SQLException {
         try {
-            Class.forName("com.mysql.jdbc.Driver").getDeclaredConstructor().newInstance();
+            Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             System.out.println("Driver load error: " + e);
         }
