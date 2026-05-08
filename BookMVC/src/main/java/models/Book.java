@@ -1,12 +1,7 @@
 package models;
 
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlElement;
-
 // NOTE: data model for a book - holds all the fields that match the database columns
-// JAXB annotations let this class be converted to/from XML if needed
 // used by servlets, DAO, and JSP views
-@XmlRootElement(name = "book")
 public class Book {
 
 	int id;
@@ -18,7 +13,6 @@ public class Book {
 	String synopsis;
 
 	public Book(int id, String title, String author, String date, String genres, String characters, String synopsis) {
-
 		this.id = id;
 		this.title = title;
 		this.author = author;
@@ -26,24 +20,20 @@ public class Book {
 		this.genres = genres;
 		this.characters = characters;
 		this.synopsis = synopsis;
-
 	}
 
 	public Book(String title, String author, String date, String genres, String characters, String synopsis) {
-
 		this.title = title;
 		this.author = author;
 		this.date = date;
 		this.genres = genres;
 		this.characters = characters;
 		this.synopsis = synopsis;
-
 	}
 
 	public Book() {
 	}
 
-	@XmlElement
 	public int getId() {
 		return id;
 	}
@@ -52,7 +42,6 @@ public class Book {
 		this.id = id;
 	}
 
-	@XmlElement
 	public String getTitle() {
 		return title;
 	}
@@ -61,7 +50,6 @@ public class Book {
 		this.title = title;
 	}
 
-	@XmlElement
 	public String getAuthor() {
 		return author;
 	}
@@ -70,7 +58,6 @@ public class Book {
 		this.author = author;
 	}
 
-	@XmlElement
 	public String getDate() {
 		return date;
 	}
@@ -79,7 +66,6 @@ public class Book {
 		this.date = date;
 	}
 
-	@XmlElement
 	public String getGenres() {
 		return genres;
 	}
@@ -88,7 +74,6 @@ public class Book {
 		this.genres = genres;
 	}
 
-	@XmlElement
 	public String getCharacters() {
 		return characters;
 	}
@@ -97,7 +82,6 @@ public class Book {
 		this.characters = characters;
 	}
 
-	@XmlElement
 	public String getSynopsis() {
 		return synopsis;
 	}
