@@ -1,17 +1,6 @@
 import { useState } from 'react';
 
-/**
- * NavBar — top navigation bar with format selector and "New Entry" button.
- *
- * NOTE: the format dropdown demonstrates HTTP content negotiation —
- * when the user changes format, the entire app switches to requesting
- * and sending data in that format (JSON, XML, or Text).
- *
- * Props:
- *   format         - currently selected format ('json', 'xml', 'text')
- *   onFormatChange - callback when user picks a different format
- *   onAddClick     - callback to open the add-book modal
- */
+
 export default function NavBar({ format, onFormatChange, onAddClick }) {
   return (
     <nav className="navbar navbar-custom mb-4">

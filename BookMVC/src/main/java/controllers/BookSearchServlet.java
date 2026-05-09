@@ -12,10 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 
-// NOTE: handles the search page
-// if no query param, shows the empty search form
-// if query exists, sanitises it through Validation.validateSearch then searches the DAO
-// search matches against title, author, and genres
+/*
+ * This controller is responsible for searching for books from the database.
+ * The GET queries the database for matches to the search against the titles,
+ * authors or genres. It then returns the result if there is one.
+*/
 @WebServlet("/books/search")
 public class BookSearchServlet extends HttpServlet {
 

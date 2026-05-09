@@ -10,9 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-// NOTE: handles book deletion via POST only (not GET, because deletes shouldn't be triggered by links/crawlers)
-// looks up the book by id, deletes it, then redirects back to the list
-// uses PRG pattern - redirect after the delete so refreshing doesn't re-submit
+/*
+ * This controller is responsible for deleting books from the database. 
+ * It has a POST that consumes a book ID, after checking the book exists 
+ * it is deleted.
+*/
 @WebServlet("/books/delete")
 public class BookDeleteServlet extends HttpServlet {
 

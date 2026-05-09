@@ -12,10 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-// NOTE: handles editing existing books
-// GET loads the book by id and shows the form pre-filled with current values
-// POST validates and saves changes, reuses buildBookFromRequest from BookAddServlet
-// redirects after save (PRG pattern)
+/*
+ * This controller is responsible for editing books from the database.
+ * The GET finds a book data to fill the editing form for ease of use for the user.
+ * The POST validates the data and then updates the selected book.
+*/
 @WebServlet("/books/edit")
 public class BookEditServlet extends HttpServlet {
 
@@ -42,7 +43,7 @@ public class BookEditServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		try {
 			int id = Integer.parseInt(req.getParameter("id"));
-			Book book = BookAddServlet.buildBookFromRequest(req);
+			Book book = BookAddServlet.buildABookFromRequest(req);
 			book.setId(id);
 
 			List<String> errors = Validation.validateBook(book);

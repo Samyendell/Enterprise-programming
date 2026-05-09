@@ -12,13 +12,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-// NOTE: main page - fetches all books, sorts them, paginates, and forwards to the JSP view
-// supports ?sort=title|author|date|genres and ?order=asc|desc query params for sorting
-// supports ?page=1&size=5 query params for pagination
+/*
+ * This controller is responsible for displaying the books from the database. 
+ * It just has a GET that retrieves all the data from the database and then 
+ * sends the data onwards in the format requested by the url parameters 
+ * (sorting, pages)
+*/
 @WebServlet("/books")
 public class BookListServlet extends HttpServlet {
 
-	// NOTE: default number of books per page
 	private static final int DEFAULT_PAGE_SIZE = 5;
 
 	@Override
@@ -26,7 +28,6 @@ public class BookListServlet extends HttpServlet {
 		try {
 			ArrayList<Book> books = BookDAO.getInstance().getAllBooks();
 
-			// NOTE: sorting - read sort field and direction from query params
 			String sortField = req.getParameter("sort");
 			String sortOrder = req.getParameter("order");
 			if (sortField == null)
@@ -35,7 +36,6 @@ public class BookListServlet extends HttpServlet {
 				sortOrder = "asc";
 			books = sortBooks(books, sortField, sortOrder);
 
-			// NOTE: pagination - work out which slice of books to show
 			int totalBooks = books.size();
 			int pageSize = parseIntOrDefault(req.getParameter("size"), DEFAULT_PAGE_SIZE);
 			int totalPages = Math.max(1, (int) Math.ceil((double) totalBooks / pageSize));
@@ -49,8 +49,6 @@ public class BookListServlet extends HttpServlet {
 			int toIndex = Math.min(fromIndex + pageSize, totalBooks);
 			ArrayList<Book> pageBooks = new ArrayList<>(books.subList(fromIndex, toIndex));
 
-			// NOTE: pass everything the JSP needs to render the table + pagination + sort
-			// links
 			req.setAttribute("books", pageBooks);
 			req.setAttribute("totalBooks", totalBooks);
 			req.setAttribute("currentPage", page);
@@ -66,25 +64,24 @@ public class BookListServlet extends HttpServlet {
 		}
 	}
 
-	// NOTE: sorts the book list based on field name and asc/desc direction
 	private ArrayList<Book> sortBooks(ArrayList<Book> books, String field, String order) {
 		Comparator<Book> comp;
 		switch (field.toLowerCase()) {
-			case "author":
-				comp = Comparator.comparing(b -> b.getAuthor() != null ? b.getAuthor().toLowerCase() : "");
-				break;
-			case "date":
-				comp = Comparator.comparing(b -> b.getDate() != null ? b.getDate() : "");
-				break;
-			case "genres":
-				comp = Comparator.comparing(b -> b.getGenres() != null ? b.getGenres().toLowerCase() : "");
-				break;
-			case "id":
-				comp = Comparator.comparingInt(Book::getId);
-				break;
-			default:
-				comp = Comparator.comparing(b -> b.getTitle() != null ? b.getTitle().toLowerCase() : "");
-				break;
+		case "author":
+			comp = Comparator.comparing(b -> b.getAuthor() != null ? b.getAuthor().toLowerCase() : "");
+			break;
+		case "date":
+			comp = Comparator.comparing(b -> b.getDate() != null ? b.getDate() : "");
+			break;
+		case "genres":
+			comp = Comparator.comparing(b -> b.getGenres() != null ? b.getGenres().toLowerCase() : "");
+			break;
+		case "id":
+			comp = Comparator.comparingInt(Book::getId);
+			break;
+		default:
+			comp = Comparator.comparing(b -> b.getTitle() != null ? b.getTitle().toLowerCase() : "");
+			break;
 		}
 		if ("desc".equalsIgnoreCase(order)) {
 			comp = comp.reversed();
@@ -93,8 +90,6 @@ public class BookListServlet extends HttpServlet {
 		return books;
 	}
 
-	// NOTE: safely parses an integer from a string, returns the default if null or
-	// invalid
 	private int parseIntOrDefault(String s, int defaultVal) {
 		if (s == null)
 			return defaultVal;

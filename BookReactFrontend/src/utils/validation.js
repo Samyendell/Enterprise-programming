@@ -1,19 +1,6 @@
 /**
- * Client-side validation that mirrors the server-side Validation.java.
- *
- * NOTE: by duplicating the validation rules on the client, the user gets
- * instant feedback without a round-trip to the server. The same rules
- * are enforced server-side (in Validation.java) as a safety net, so
- * even if client-side validation is bypassed, bad data cannot be saved.
- *
- * Rules checked:
- *   - Title: required, max 150 characters
- *   - Author: required, max 150 characters, letters/spaces/hyphens/apostrophes only
- *   - Date: required, only digits/hyphens/slashes allowed
- *   - Genres: optional, max 200 characters
- *   - Characters: optional, no limit
- *   - Synopsis: optional, max 8000 characters
- *   - All fields: HTML tags are stripped before checking (XSS prevention)
+ * This file provides the client side validation, it follows the same patterns used 
+ * on the server side.
  */
 
 const AUTHOR_REGEX = /^[a-zA-Z .'\-]+$/;
@@ -44,8 +31,6 @@ export function validateBook(b) {
     else if (!DATE_REGEX.test(date.trim())) errs.push('Date may only contain numbers, hyphens, and forward slashes.');
 
     if (genres && genres.length > 200) errs.push('Genres must not exceed 200 characters.');
-
-    // Characters: optional, no length limit
 
     if (synopsis && synopsis.length > 8000) errs.push('Synopsis must not exceed 8000 characters.');
 

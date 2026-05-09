@@ -2,15 +2,14 @@ package observer;
 
 import models.Book;
 
-// NOTE: event object for the observer pattern
-// wraps the change type and the book that was affected
-// passed from the DAO to all registered listeners after each write operation
+/*
+ * This class is the event object of the observer pattern in the project.
+ * It encapsulates the action and data on a database update.  
+ */
 public class BookEvent {
 
 	public enum Type {
-		CREATE,
-		DELETE,
-		UPDATE
+		CREATE, DELETE, UPDATE
 	}
 
 	private final Type type;

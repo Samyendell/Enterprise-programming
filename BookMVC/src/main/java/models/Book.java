@@ -1,16 +1,19 @@
 package models;
 
-// NOTE: data model for a book - holds all the fields that match the database columns
-// used by servlets, DAO, and JSP views
+/*
+ * Model class responsible for representing an individual book.
+ * Stores the fields of a book for use by the dataThis model stores 
+ * the data fields required by the database and UI.
+ */
 public class Book {
 
-	int id;
-	String title;
-	String author;
-	String date;
-	String genres;
-	String characters;
-	String synopsis;
+	private int id;
+	private String title;
+	private String author;
+	private String date;
+	private String genres;
+	private String characters;
+	private String synopsis;
 
 	public Book(int id, String title, String author, String date, String genres, String characters, String synopsis) {
 		this.id = id;

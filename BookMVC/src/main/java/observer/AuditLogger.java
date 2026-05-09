@@ -3,9 +3,10 @@ package observer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-// NOTE: observer pattern - concrete listener that logs all book changes
-// registered with the DAO at startup, gets called after every create/update/delete
-// prints a timestamped audit trail to the server console
+/*
+ * This class is the subscriber of the observer pattern in the project.
+ * consumes book event to provide data on the database action taking place
+ */
 public class AuditLogger implements BookEventListener {
 	private static final DateTimeFormatter formattedDateTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -14,10 +15,7 @@ public class AuditLogger implements BookEventListener {
 		String timestamp = LocalDateTime.now().format(formattedDateTime);
 		models.Book b = event.getBook();
 
-		System.out.printf("[AUDIT %s] %s — id=%d title='%s'%n",
-				timestamp,
-				event.getType().name(),
-				b.getId(),
+		System.out.printf("[AUDIT %s] %s — id=%d title='%s'%n", timestamp, event.getType().name(), b.getId(),
 				b.getTitle());
 	}
 }

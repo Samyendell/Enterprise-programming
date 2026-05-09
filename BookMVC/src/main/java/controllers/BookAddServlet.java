@@ -13,10 +13,10 @@ import db.BookDAO;
 import models.Book;
 import util.Validation;
 
-// NOTE: handles adding new books
-// GET shows the empty form, POST processes the submission
-// validates input server-side, if errors exist re-shows the form with messages
-// on success redirects to the book list (PRG pattern to avoid duplicate submissions)
+/*
+ * This controller is responsible for creating new books. It uses a GET to 
+ * display a form and then a POST to process the new book form data. 
+*/
 @WebServlet("/books/add")
 public class BookAddServlet extends HttpServlet {
 
@@ -29,7 +29,7 @@ public class BookAddServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		Book book = buildBookFromRequest(req);
+		Book book = buildABookFromRequest(req);
 
 		List<String> errors = Validation.validateBook(book);
 
@@ -52,7 +52,7 @@ public class BookAddServlet extends HttpServlet {
 		}
 	}
 
-	static Book buildBookFromRequest(HttpServletRequest req) {
+	static Book buildABookFromRequest(HttpServletRequest req) {
 		Book b = new Book();
 		b.setTitle(param(req, "title"));
 		b.setAuthor(param(req, "author"));

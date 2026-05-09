@@ -26,42 +26,25 @@ import './App.css';
 const PAGE_SIZE = 10;
 
 export default function App() {
-  // NOTE: core data state — books array and the currently selected response format
   const [books, setBooks] = useState([]);
   const [format, setFormat] = useState('json');
   const [loading, setLoading] = useState(true);
   const [tableErr, setTableErr] = useState('');
-
-  // NOTE: raw API response displayed in the RawViewer panel
   const [rawMethod, setRawMethod] = useState('');
   const [rawText, setRawText] = useState('');
-
-  // NOTE: sorting state — which column and direction
   const [sortField, setSortField] = useState('title');
   const [sortOrder, setSortOrder] = useState('asc');
-
-  // NOTE: pagination state — read from server response headers
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalBooks, setTotalBooks] = useState(0);
-
-  // NOTE: search query persisted so it survives page/sort changes
   const [searchQuery, setSearchQuery] = useState('');
-
-  // NOTE: modal state for add/edit form
   const [modalShow, setModalShow] = useState(false);
   const [modalMode, setModalMode] = useState('add');
   const [modalInit, setModalInit] = useState(null);
   const [modalErrors, setModalErrors] = useState([]);
   const [editId, setEditId] = useState(null);
-
-  // NOTE: detail modal state — opens when user clicks a table row
   const [detailBook, setDetailBook] = useState(null);
   const [detailShow, setDetailShow] = useState(false);
-
-  // NOTE: fetches a page of books from the API with current sort/search/format.
-  // useCallback ensures this function is recreated when the format changes,
-  // so the effect below re-fetches whenever the user switches format.
   const loadBooks = useCallback(async (page, sort, order, search) => {
     setLoading(true);
     setTableErr('');
@@ -79,7 +62,6 @@ export default function App() {
     setLoading(false);
   }, [format]);
 
-  // NOTE: re-fetch books whenever the format changes (JSON/XML/Text)
   useEffect(() => { loadBooks(currentPage, sortField, sortOrder, searchQuery); }, [format]);
 
   // NOTE: resets search and goes back to page 1 showing all books
