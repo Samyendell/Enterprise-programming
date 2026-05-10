@@ -1,6 +1,6 @@
 /**
  * This file handles all communication with the Restful API. It contains 
- * functions to handle the different data types JSON, XML and text. 
+ * functions to handle the different data formats JSON, XML and text. 
  * It also includes error message handling and pagination.
  */
 

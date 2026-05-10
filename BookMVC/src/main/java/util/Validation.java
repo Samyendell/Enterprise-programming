@@ -8,7 +8,6 @@ import java.util.List;
  * This class is responsible for all the validation on the MVC project
  * sanitises all data to ensure safety and makes sure all the data is 
  * valid.
- * Validation: The security layer of the application.
  * 
  */
 public class Validation {

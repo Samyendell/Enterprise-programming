@@ -1,23 +1,18 @@
 package models;
 
-import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlElement;
-
-// NOTE: main data model - represents a single book record
-// @XmlRootElement tells JAXB how to convert this to/from XML
-// @XmlElement on getters marks which fields appear in the XML output
-// also used by GSON for JSON (GSON reads the field names directly)
-// toString() outputs pipe-delimited format for the text formatter
-@XmlRootElement(name = "book")
+/*
+ * Model class responsible for representing an individual book.
+ * Stores the fields of a book for use by the DAO and controllers.
+ */
 public class Book {
 
-	int id;
-	String title;
-	String author;
-	String date;
-	String genres;
-	String characters;
-	String synopsis;
+	private int id;
+	private String title;
+	private String author;
+	private String date;
+	private String genres;
+	private String characters;
+	private String synopsis;
 
 	public Book(int id, String title, String author, String date, String genres, String characters, String synopsis) {
 		this.id = id;
@@ -41,7 +36,6 @@ public class Book {
 	public Book() {
 	}
 
-	@XmlElement
 	public int getId() {
 		return id;
 	}
@@ -50,7 +44,6 @@ public class Book {
 		this.id = id;
 	}
 
-	@XmlElement
 	public String getTitle() {
 		return title;
 	}
@@ -59,7 +52,6 @@ public class Book {
 		this.title = title;
 	}
 
-	@XmlElement
 	public String getAuthor() {
 		return author;
 	}
@@ -68,7 +60,6 @@ public class Book {
 		this.author = author;
 	}
 
-	@XmlElement
 	public String getDate() {
 		return date;
 	}
@@ -77,7 +68,6 @@ public class Book {
 		this.date = date;
 	}
 
-	@XmlElement
 	public String getGenres() {
 		return genres;
 	}
@@ -86,7 +76,6 @@ public class Book {
 		this.genres = genres;
 	}
 
-	@XmlElement
 	public String getCharacters() {
 		return characters;
 	}
@@ -95,7 +84,6 @@ public class Book {
 		this.characters = characters;
 	}
 
-	@XmlElement
 	public String getSynopsis() {
 		return synopsis;
 	}
@@ -104,17 +92,9 @@ public class Book {
 		this.synopsis = synopsis;
 	}
 
-	/**
-	 * Pipe-delimited format used by TextBookFormatter.
-	 * Format: id|title|author|date|genres|characters|synopsis
-	 */
 	@Override
 	public String toString() {
-		return id + "|" + (title != null ? title : "")
-				+ "|" + (author != null ? author : "")
-				+ "|" + (date != null ? date : "")
-				+ "|" + (genres != null ? genres : "")
-				+ "|" + (characters != null ? characters : "")
-				+ "|" + (synopsis != null ? synopsis : "");
+		return "Book [id=" + id + ", title=" + title + ", author=" + author + ", date=" + date + ", genres=" + genres
+				+ ", synopsis=" + synopsis + ", characters=" + characters + "]";
 	}
 }

@@ -4,8 +4,11 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import './App.css'
 import App from './App.jsx'
 
+/*
+ * main entry point for the react application
+*/
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+    <StrictMode>
+        <App />
+    </StrictMode>,
 )

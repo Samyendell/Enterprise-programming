@@ -2,8 +2,7 @@ package models;
 
 /*
  * Model class responsible for representing an individual book.
- * Stores the fields of a book for use by the dataThis model stores 
- * the data fields required by the database and UI.
+ * Stores the fields of a book for use by the DAO and controllers.
  */
 public class Book {
 

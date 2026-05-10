@@ -22,16 +22,18 @@ import observer.BookEventListener;
  */
 public class BookDAO {
 
-	// volatile used to ensure there is only one instance when multiple users use
-	// the site
+	/*
+	 * volatile used to ensure there is only one instance when multiple users use
+	 * the site
+	 */
 	private static volatile BookDAO instance;
 
-	// gets the unique shared instance of BookDAO.
-	// synchronized used to ensure 2 different users don't check if BookDAO exists
-	// at once.
-	// the second null check after synchronized is to ensure an instance wasn't
-	// created
-	// while waiting at synchronized
+	/*
+	 * gets the unique shared instance of BookDAO. Synchronized used to ensure 2
+	 * different users don't check if BookDAO exists at once. The second null check
+	 * after synchronized is to ensure an instance wasn't created while waiting at
+	 * synchronized
+	 */
 	public static BookDAO getInstance() {
 		if (instance == null) {
 			synchronized (BookDAO.class) {
@@ -58,14 +60,13 @@ public class BookDAO {
 			l.onBookEvent(event);
 	}
 
-	// private final String user = "yendells";
-	// private final String password = "CemVegDov1";
-	// private final String url = "jdbc:mysql://mudfoot.doc.stu.mmu.ac.uk:6306/" +
-	// user;
+	private final String user = "yendells";
+	private final String password = "CemVegDov1";
+	private final String url = "jdbc:mysql://mudfoot.doc.stu.mmu.ac.uk:6306/" + user;
 
-	private final String user = "admin";
-	private final String password = "eT5FreIPHHuZR8911o1J";
-	private final String url = "jdbc:mysql://book-db-instance.c78aemq4eziw.eu-west-2.rds.amazonaws.com:3306/book_mvc_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+//	private final String user = "admin";
+//	private final String password = "eT5FreIPHHuZR8911o1J";
+//	private final String url = "jdbc:mysql://book-db-instance.c78aemq4eziw.eu-west-2.rds.amazonaws.com:3306/book_mvc_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
 
 	private Connection openConnection() throws SQLException {
 		try {

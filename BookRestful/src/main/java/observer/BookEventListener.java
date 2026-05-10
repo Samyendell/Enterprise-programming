@@ -1,8 +1,9 @@
 package observer;
 
-// NOTE: observer pattern - interface that any listener must implement
-// the DAO calls onBookEvent on all registered listeners after a write
-// new listeners just implement this and register with the DAO
+/*
+ * This interface defines the contract for any class that wants to listen
+ * for database changes.
+ */
 public interface BookEventListener {
 
 	void onBookEvent(BookEvent event);

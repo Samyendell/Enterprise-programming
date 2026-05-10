@@ -2,16 +2,14 @@ package observer;
 
 import models.Book;
 
-// NOTE: observer pattern - this is the event object passed to listeners
-// holds the type of change (CREATE/UPDATE/DELETE) and the affected book
-// immutable once created - fields are final
+/*
+ * This class is the event object of the observer pattern in the project.
+ * It encapsulates the action and data on a database update.  
+ */
 public class BookEvent {
 
-	// NOTE: enum restricts event types to only valid operations
 	public enum Type {
-		CREATE,
-		DELETE,
-		UPDATE
+		CREATE, DELETE, UPDATE
 	}
 
 	private final Type type;

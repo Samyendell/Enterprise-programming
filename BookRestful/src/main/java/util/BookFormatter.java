@@ -3,18 +3,18 @@ package util;
 import models.Book;
 import java.util.ArrayList;
 
-// NOTE: strategy pattern - defines the contract for all format handlers
-// each format (JSON, XML, text) has its own class implementing these three methods
-// the servlet works with this interface so it doesn't care which format is actually used
-// adding a new format means: new class + one case in the factory, nothing else changes
+/*
+ * This interface helps implement the strategy pattern by defining the
+ * contract for the different data type formatters. This file facilitates
+ * the serialisation logic being decoupled from the controller allow ease
+ * of addition data formats being added in the future
+ * 
+ */
 public interface BookFormatter {
 
-    /** Serialises a single book to the target format. */
-    String formatBook(Book b) throws Exception;
+	String formatBook(Book b) throws Exception;
 
-    /** Serialises a list of books to the target format. */
-    String formatBooks(ArrayList<Book> books) throws Exception;
+	String formatBooks(ArrayList<Book> books) throws Exception;
 
-    /** Returns the MIME type to set on the HTTP response. */
-    String getContentType();
+	String getContentType();
 }
